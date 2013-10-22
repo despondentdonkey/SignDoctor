@@ -1,6 +1,7 @@
 package main;
 
 import java.util.*;
+import org.bukkit.*;
 import org.bukkit.block.*;
 import org.bukkit.command.*;
 import org.bukkit.entity.*;
@@ -46,7 +47,7 @@ public class SignEditor extends JavaPlugin {
 				else
 					p.setMetadata(signEdit, new FixedMetadataValue(this, true));
 
-				sender.sendMessage(!editing ? "Sign editing has been enabled." : "Sign editing has been disabled.");
+				say(p, !editing ? "Editing has been enabled." : "Editing has been disabled.");
 				return true;
 			}
 
@@ -73,11 +74,11 @@ public class SignEditor extends JavaPlugin {
 						sign.update();
 						return true;
 					} else {
-						sender.sendMessage("No sign is active.");
+						say(p, "No sign is active.");
 						return true;
 					}
 				} else {
-					noSignEditMessage(sender);
+					noSignEditMessage(p);
 					return true;
 				}
 			}
@@ -101,11 +102,11 @@ public class SignEditor extends JavaPlugin {
 
 						return true;
 					} else {
-						sender.sendMessage("No sign is active.");
+						say(p, "No sign is active.");
 						return true;
 					}
 				} else {
-					noSignEditMessage(sender);
+					noSignEditMessage(p);
 					return true;
 				}
 			}
@@ -119,7 +120,7 @@ public class SignEditor extends JavaPlugin {
 			//Copy sign command.
 			if (cmd.getName().equalsIgnoreCase("copySign")) {
 				if (copyActiveSign(p)) {
-					p.sendMessage("Sign has been copied.");
+					say(p, "Sign has been copied.");
 				}
 
 				return true;
@@ -129,7 +130,7 @@ public class SignEditor extends JavaPlugin {
 			if (cmd.getName().equalsIgnoreCase("cutSign")) {
 				if (copyActiveSign(p)) {
 					clearActiveSign(p);
-					p.sendMessage("Sign has been cut.");
+					say(p, "Sign has been cut.");
 				}
 
 				return true;
@@ -151,16 +152,16 @@ public class SignEditor extends JavaPlugin {
 						sign.update();
 						return true;
 					} else {
-						sender.sendMessage("No sign is active.");
+						say(p, "No sign is active.");
 						return true;
 					}
 				} else {
-					noSignEditMessage(sender);
+					noSignEditMessage(p);
 					return true;
 				}
 			}
 		} else {
-			sender.sendMessage("You must be a player for this to work.");
+			sender.sendMessage("Sign Editor: You must be a player for this to work.");
 			return true;
 		}
 
@@ -183,7 +184,7 @@ public class SignEditor extends JavaPlugin {
 
 				return true;
 			} else {
-				p.sendMessage("No sign is active.");
+				say(p, "No sign is active.");
 				return false;
 			}
 		} else {
@@ -206,7 +207,7 @@ public class SignEditor extends JavaPlugin {
 
 				return true;
 			} else {
-				p.sendMessage("No sign is active.");
+				say(p, "No sign is active.");
 				return false;
 			}
 		} else {
@@ -220,8 +221,12 @@ public class SignEditor extends JavaPlugin {
 	 * 
 	 * @param s The player to send the message to.
 	 */
-	public static void noSignEditMessage(CommandSender s) {
-		s.sendMessage("Sign editing is not enabled. To enable, use the command: toggleSignEdit");
+	public static void noSignEditMessage(Player p) {
+		say(p, "Sign editing is not enabled. To enable, use the command: toggleSignEdit");
+	}
+
+	public static void say(Player p, String s) {
+		p.sendMessage(ChatColor.GOLD + "Sign Editor: " + ChatColor.WHITE + s);
 	}
 
 	public static void setMetaData(Player p, String key, Object value, Plugin plugin) {

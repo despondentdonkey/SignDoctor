@@ -21,16 +21,20 @@ public class SignEditorEvents implements Listener {
 
 	@EventHandler()
 	public void onInteract(PlayerInteractEvent e) {
-		try {
-			if ((boolean) SignEditor.getMetadata(e.getPlayer(), SignEditor.signEdit, SignEditor.plugin)) {
-				if (e.getClickedBlock().getState() instanceof Sign) {
-					Sign s = (Sign) e.getClickedBlock().getState();
+		if ((boolean) SignEditor.getMetadata(e.getPlayer(), SignEditor.signEdit, SignEditor.plugin)) {
+			Block clickedBlock = e.getClickedBlock();
+
+			if (clickedBlock != null) {
+				BlockState clickedBlockState = clickedBlock.getState();
+
+				if (clickedBlockState instanceof Sign) {
+					Sign s = (Sign) clickedBlockState;
 					e.getPlayer().setMetadata(SignEditor.sign, new FixedMetadataValue(SignEditor.plugin, s));
-					e.getPlayer().sendMessage("Sign active.");
+					SignEditor.say(e.getPlayer(), "Sign active.");
 				}
+			} else {
+				SignEditor.say(e.getPlayer(), "Do not use a block to select a sign. Instead use your hand or some other item that cannot be placed.");
 			}
-		} catch (NullPointerException exception) {
-			e.getPlayer().sendMessage("Sign could not be activated, please try again.");
 		}
 	}
 }
