@@ -61,11 +61,7 @@ public class SignEditor extends JavaPlugin {
                             }
                         }
 
-                        sign.update();
-
-                        //Needed for colors to appear.
-                        getServer().getPluginManager().callEvent(new SignChangeEvent(sign.getBlock(), p, sign.getLines()));
-                        sign.update();
+                        updateSign(p, sign);
                     } else {
                         say(p, "No sign is active.");
                     }
@@ -94,11 +90,8 @@ public class SignEditor extends JavaPlugin {
                             }
 
                             sign.setLine(line - 1, sb.toString());
-                            sign.update();
 
-                            //Needed for colors to appear.
-                            getServer().getPluginManager().callEvent(new SignChangeEvent(sign.getBlock(), p, sign.getLines()));
-                            sign.update();
+                            updateSign(p, sign);
                         } else {
                             say(p, "Invalid line number. Must be 1 to 4.");
                         }
@@ -238,6 +231,21 @@ public class SignEditor extends JavaPlugin {
             noSignEditMessage(p);
             return false;
         }
+    }
+
+    /**
+     * Updates a sign and calls a SignChangeEvent.
+     * 
+     * @param p The player who updated the sign.
+     * @param s The sign you want to update.
+     */
+    public void updateSign(Player p, Sign s) {
+        //The first update is used to change the text of the sign just in case the SignChangeEvent blocks it. This is used mostly to support Lockette.
+        s.update();
+
+        getServer().getPluginManager().callEvent(new SignChangeEvent(s.getBlock(), p, s.getLines()));
+        //We must update again after the SignChangeEvent for colors to work.
+        s.update();
     }
 
     /**
