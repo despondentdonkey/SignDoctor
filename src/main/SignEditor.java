@@ -43,12 +43,9 @@ public class SignEditor extends JavaPlugin {
 
             //Toggle sign edit command.
             if (cmd.getName().equalsIgnoreCase("toggleSignEdit")) {
-                if (editing)
-                    p.setMetadata(signEdit, new FixedMetadataValue(this, false));
-                else
-                    p.setMetadata(signEdit, new FixedMetadataValue(this, true));
-
+                p.setMetadata(signEdit, new FixedMetadataValue(this, !editing));
                 say(p, !editing ? "Editing has been enabled." : "Editing has been disabled.");
+
                 return true;
             }
 
@@ -57,30 +54,19 @@ public class SignEditor extends JavaPlugin {
                 if (editing) {
                     if (sign != null) {
                         for (int i = 0; i < Math.min(args.length, 4); i++) {
-                            String text = args[i];
-
-                            char[] chars = text.toCharArray();
-
-                            for (char c : chars) {
-                                if (c == '_') {
-                                    text = text.replace(c, ' ');
-                                }
-                            }
-
+                            String text = args[i].replace('_', ' ');
                             sign.setLine(i, text);
                         }
 
                         sign.update();
-
-                        return true;
                     } else {
                         say(p, "No sign is active.");
-                        return true;
                     }
                 } else {
                     noSignEditMessage(p);
-                    return true;
                 }
+
+                return true;
             }
 
             //Edit sign line command.
@@ -103,15 +89,14 @@ public class SignEditor extends JavaPlugin {
                             say(p, "Invalid line number. Must be 1 to 4.");
                         }
 
-                        return true;
                     } else {
                         say(p, "No sign is active.");
-                        return true;
                     }
                 } else {
                     noSignEditMessage(p);
-                    return true;
                 }
+
+                return true;
             }
 
             //Clear sign command.
