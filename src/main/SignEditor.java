@@ -37,11 +37,11 @@ public class SignEditor extends JavaPlugin {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (sender instanceof Player) {
 			Player p = (Player) sender;
+			boolean editing = (boolean) getMetadata(p, signEdit, this);
+			Sign sign = (Sign) getMetadata(p, SignEditor.sign, this);
 
 			//Toggle sign edit command.
 			if (cmd.getName().equalsIgnoreCase("toggleSignEdit")) {
-				boolean editing = (boolean) getMetadata(p, signEdit, this);
-
 				if (editing)
 					p.setMetadata(signEdit, new FixedMetadataValue(this, false));
 				else
@@ -53,25 +53,24 @@ public class SignEditor extends JavaPlugin {
 
 			//Edit sign command.
 			if (cmd.getName().equalsIgnoreCase("editSign")) {
-				boolean editing = (boolean) getMetadata(p, signEdit, this);
-				Sign sign = (Sign) getMetadata(p, SignEditor.sign, this);
-
 				if (editing) {
 					if (sign != null) {
-						for (int i = 0; i < args.length; i++) {
-							if (!args[i].equals("\\n")) {
-								char[] c = args[i].toCharArray();
+						for (int i = 0; i < Math.min(args.length, 4); i++) {
+							String text = args[i];
 
-								for (char ch : c) {
-									if (ch == '_')
-										args[i] = args[i].replace(ch, ' ');
+							char[] chars = text.toCharArray();
+
+							for (char c : chars) {
+								if (c == '_') {
+									text = text.replace(c, ' ');
 								}
-
-								sign.setLine(i, args[i]);
 							}
+
+							sign.setLine(i, text);
 						}
 
 						sign.update();
+
 						return true;
 					} else {
 						say(p, "No sign is active.");
@@ -85,20 +84,23 @@ public class SignEditor extends JavaPlugin {
 
 			//Edit sign line command.
 			if (cmd.getName().equalsIgnoreCase("editSignln")) {
-				boolean editing = (boolean) getMetadata(p, signEdit, this);
-				Sign sign = (Sign) getMetadata(p, SignEditor.sign, this);
-
 				if (editing) {
 					if (sign != null) {
-						StringBuilder sb = new StringBuilder();
+						int line = Integer.parseInt(args[0]);
 
-						for (int i = 1; i < args.length; i++) {
-							sb.append(args[i]);
-							sb.append(" ");
+						if (line > 0 && line < 5) {
+							StringBuilder sb = new StringBuilder();
+
+							for (int i = 1; i < args.length; i++) {
+								sb.append(args[i]);
+								sb.append(" ");
+							}
+
+							sign.setLine(line - 1, sb.toString());
+							sign.update();
+						} else {
+							say(p, "Invalid line number. Must be 1 to 4.");
 						}
-
-						sign.setLine(Integer.parseInt(args[0]) - 1, sb.toString());
-						sign.update();
 
 						return true;
 					} else {
@@ -138,9 +140,6 @@ public class SignEditor extends JavaPlugin {
 
 			//Paste sign command.
 			if (cmd.getName().equalsIgnoreCase("pasteSign")) {
-				boolean editing = (boolean) getMetadata(p, signEdit, this);
-				Sign sign = (Sign) getMetadata(p, SignEditor.sign, this);
-
 				if (editing) {
 					if (sign != null) {
 						String[] sl = (String[]) getMetadata(p, signLines, this);
