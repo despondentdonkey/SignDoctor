@@ -85,9 +85,12 @@ public class SignEditor extends JavaPlugin {
                         if (line > 0 && line < 5) {
                             StringBuilder sb = new StringBuilder();
 
-                            for (int i = 1; i < args.length; i++) {
+                            for (int i = 1; i < args.length; ++i) {
                                 sb.append(args[i]);
-                                sb.append(" ");
+
+                                //Add a space if it is not the last element.
+                                if (i < args.length - 1)
+                                    sb.append(" ");
                             }
 
                             sign.setLine(line - 1, sb.toString());
