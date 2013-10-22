@@ -1,2 +1,5 @@
 Ideas:
-	Add teleport to active sign command. (Cache location before teleporting and then add a command that can take you back to where you were)
+    Add a sign selection thing. So you can select multiple signs to edit at once.
+
+Issues:
+    Make sure to handle input with 'editSignln' correctly. If you pass a string as the first argument you get an error.
