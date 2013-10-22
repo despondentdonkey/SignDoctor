@@ -12,8 +12,14 @@ commands:
   toggleSignEdit:
     description: Toggle the ability to edit signs.
     usage: /<command>
+  clearSign:
+    description: Clears the active sign's text.
+    usage: /<command>
   copySign:
     description: Copies the active sign's text.
+    usage: /<command>
+  cutSign:
+    description: Cuts the active sign's text.
     usage: /<command>
   pasteSign:
     description: Pastes the stored sign text to the active sign.

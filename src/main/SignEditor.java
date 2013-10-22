@@ -34,121 +34,185 @@ public class SignEditor extends JavaPlugin {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		//Toggle sign edit command.
-		if (cmd.getName().equalsIgnoreCase("toggleSignEdit")) {
+		if (sender instanceof Player) {
 			Player p = (Player) sender;
-			boolean editing = (boolean) getMetadata(p, signEdit, this);
-			if (editing)
-				p.setMetadata(signEdit, new FixedMetadataValue(this, false));
-			else
-				p.setMetadata(signEdit, new FixedMetadataValue(this, true));
-			sender.sendMessage(!editing ? "Sign editing has been enabled." : "Sign editing has been disabled.");
+
+			//Toggle sign edit command.
+			if (cmd.getName().equalsIgnoreCase("toggleSignEdit")) {
+				boolean editing = (boolean) getMetadata(p, signEdit, this);
+
+				if (editing)
+					p.setMetadata(signEdit, new FixedMetadataValue(this, false));
+				else
+					p.setMetadata(signEdit, new FixedMetadataValue(this, true));
+
+				sender.sendMessage(!editing ? "Sign editing has been enabled." : "Sign editing has been disabled.");
+				return true;
+			}
+
+			//Edit sign command.
+			if (cmd.getName().equalsIgnoreCase("editSign")) {
+				boolean editing = (boolean) getMetadata(p, signEdit, this);
+				Sign sign = (Sign) getMetadata(p, SignEditor.sign, this);
+
+				if (editing) {
+					if (sign != null) {
+						for (int i = 0; i < args.length; i++) {
+							if (!args[i].equals("\\n")) {
+								char[] c = args[i].toCharArray();
+
+								for (char ch : c) {
+									if (ch == '_')
+										args[i] = args[i].replace(ch, ' ');
+								}
+
+								sign.setLine(i, args[i]);
+							}
+						}
+
+						sign.update();
+						return true;
+					} else {
+						sender.sendMessage("No sign is active.");
+						return true;
+					}
+				} else {
+					noSignEditMessage(sender);
+					return true;
+				}
+			}
+
+			//Edit sign line command.
+			if (cmd.getName().equalsIgnoreCase("editSignln")) {
+				boolean editing = (boolean) getMetadata(p, signEdit, this);
+				Sign sign = (Sign) getMetadata(p, SignEditor.sign, this);
+
+				if (editing) {
+					if (sign != null) {
+						StringBuilder sb = new StringBuilder();
+
+						for (int i = 1; i < args.length; i++) {
+							sb.append(args[i]);
+							sb.append(" ");
+						}
+
+						sign.setLine(Integer.parseInt(args[0]) - 1, sb.toString());
+						sign.update();
+
+						return true;
+					} else {
+						sender.sendMessage("No sign is active.");
+						return true;
+					}
+				} else {
+					noSignEditMessage(sender);
+					return true;
+				}
+			}
+
+			//Clear sign command.
+			if (cmd.getName().equalsIgnoreCase("clearSign")) {
+				clearActiveSign(p);
+				return true;
+			}
+
+			//Copy sign command.
+			if (cmd.getName().equalsIgnoreCase("copySign")) {
+				if (copyActiveSign(p)) {
+					p.sendMessage("Sign has been copied.");
+				}
+
+				return true;
+			}
+
+			//Cut sign command.
+			if (cmd.getName().equalsIgnoreCase("cutSign")) {
+				if (copyActiveSign(p)) {
+					clearActiveSign(p);
+					p.sendMessage("Sign has been cut.");
+				}
+
+				return true;
+			}
+
+			//Paste sign command.
+			if (cmd.getName().equalsIgnoreCase("pasteSign")) {
+				boolean editing = (boolean) getMetadata(p, signEdit, this);
+				Sign sign = (Sign) getMetadata(p, SignEditor.sign, this);
+
+				if (editing) {
+					if (sign != null) {
+						String[] sl = (String[]) getMetadata(p, signLines, this);
+
+						for (int i = 0; i < sl.length; i++) {
+							sign.setLine(i, sl[i]);
+						}
+
+						sign.update();
+						return true;
+					} else {
+						sender.sendMessage("No sign is active.");
+						return true;
+					}
+				} else {
+					noSignEditMessage(sender);
+					return true;
+				}
+			}
+		} else {
+			sender.sendMessage("You must be a player for this to work.");
 			return true;
 		}
 
-		//Edit sign command.
-		if (cmd.getName().equalsIgnoreCase("editSign")) {
-			Player p = (Player) sender;
-			boolean editing = (boolean) getMetadata(p, signEdit, this);
-			Sign sign = (Sign) getMetadata(p, SignEditor.sign, this);
-			if (editing) {
-				if (sign != null) {
-					for (int i = 0; i < args.length; i++) {
-						if (!args[i].equals("\\n")) {
-							char[] c = args[i].toCharArray();
-
-							for (char ch : c) {
-								if (ch == '_')
-									args[i] = args[i].replace(ch, ' ');
-							}
-
-							sign.setLine(i, args[i]);
-						}
-					}
-					sign.update();
-					return true;
-				} else {
-					sender.sendMessage("No sign is active.");
-					return true;
-				}
-			} else {
-				noSignEditMessage(sender);
-				return true;
-			}
-		}
-
-		//Edit sign line command.
-		if (cmd.getName().equalsIgnoreCase("editSignln")) {
-			Player p = (Player) sender;
-			boolean editing = (boolean) getMetadata(p, signEdit, this);
-			Sign sign = (Sign) getMetadata(p, SignEditor.sign, this);
-			if (editing) {
-				if (sign != null) {
-					StringBuilder sb = new StringBuilder();
-					for (int i = 1; i < args.length; i++) {
-						sb.append(args[i]);
-						sb.append(" ");
-					}
-
-					sign.setLine(Integer.parseInt(args[0]) - 1, sb.toString());
-					sign.update();
-					return true;
-				} else {
-					sender.sendMessage("No sign is active.");
-					return true;
-				}
-			} else {
-				noSignEditMessage(sender);
-				return true;
-			}
-		}
-
-		if (cmd.getName().equalsIgnoreCase("copySign")) {
-			Player p = (Player) sender;
-			boolean editing = (boolean) getMetadata(p, signEdit, this);
-			Sign sign = (Sign) getMetadata(p, SignEditor.sign, this);
-			if (editing) {
-				if (sign != null) {
-					String[] sl = new String[4];
-					for (int i = 0; i < sl.length; i++) {
-						sl[i] = sign.getLine(i);
-					}
-					p.setMetadata(signLines, new FixedMetadataValue(this, sl));
-					sender.sendMessage("Sign has been copied.");
-					return true;
-				} else {
-					sender.sendMessage("No sign is active.");
-					return true;
-				}
-			} else {
-				noSignEditMessage(sender);
-				return true;
-			}
-		}
-
-		if (cmd.getName().equalsIgnoreCase("pasteSign")) {
-			Player p = (Player) sender;
-			boolean editing = (boolean) getMetadata(p, signEdit, this);
-			Sign sign = (Sign) getMetadata(p, SignEditor.sign, this);
-			if (editing) {
-				if (sign != null) {
-					String[] sl = (String[]) getMetadata(p, signLines, this);
-					for (int i = 0; i < sl.length; i++) {
-						sign.setLine(i, sl[i]);
-					}
-					sign.update();
-					return true;
-				} else {
-					sender.sendMessage("No sign is active.");
-					return true;
-				}
-			} else {
-				noSignEditMessage(sender);
-				return true;
-			}
-		}
-
 		return false;
+	}
+
+	public boolean copyActiveSign(Player p) {
+		boolean editing = (boolean) getMetadata(p, signEdit, this);
+		Sign sign = (Sign) getMetadata(p, SignEditor.sign, this);
+
+		if (editing) {
+			if (sign != null) {
+				String[] sl = new String[4];
+
+				for (int i = 0; i < sl.length; i++) {
+					sl[i] = sign.getLine(i);
+				}
+
+				p.setMetadata(signLines, new FixedMetadataValue(this, sl));
+
+				return true;
+			} else {
+				p.sendMessage("No sign is active.");
+				return false;
+			}
+		} else {
+			noSignEditMessage(p);
+			return false;
+		}
+	}
+
+	public boolean clearActiveSign(Player p) {
+		boolean editing = (boolean) getMetadata(p, signEdit, this);
+		Sign sign = (Sign) getMetadata(p, SignEditor.sign, this);
+
+		if (editing) {
+			if (sign != null) {
+				for (int i = 0; i < 4; ++i) {
+					sign.setLine(i, "");
+				}
+
+				sign.update();
+
+				return true;
+			} else {
+				p.sendMessage("No sign is active.");
+				return false;
+			}
+		} else {
+			noSignEditMessage(p);
+			return false;
+		}
 	}
 
 	/**
