@@ -29,8 +29,15 @@ public class SignEditorEvents implements Listener {
 
                 if (clickedBlockState instanceof Sign) {
                     Sign s = (Sign) clickedBlockState;
-                    e.getPlayer().setMetadata(SignEditor.sign, new FixedMetadataValue(SignEditor.plugin, s));
-                    SignEditor.say(e.getPlayer(), "Sign active.");
+                    Sign prevSign = (Sign) SignEditor.getMetadata(e.getPlayer(), SignEditor.sign, SignEditor.plugin);
+
+                    if (prevSign != null && prevSign.equals(s)) {
+                        e.getPlayer().setMetadata(SignEditor.sign, new FixedMetadataValue(SignEditor.plugin, null));
+                        SignEditor.say(e.getPlayer(), "Sign inactive.");
+                    } else {
+                        e.getPlayer().setMetadata(SignEditor.sign, new FixedMetadataValue(SignEditor.plugin, s));
+                        SignEditor.say(e.getPlayer(), "Sign active.");
+                    }
                 }
             } else {
                 SignEditor.say(e.getPlayer(), "Do not use a block to select a sign. Instead use your hand or some other item that cannot be placed.");
