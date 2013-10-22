@@ -7,7 +7,7 @@ commands:
     description: Edit the currently selected sign. Use \n for new line and _ for space.
     usage: /<command> [Line1] [Line2] [Line3] [Line4]
   editSignln:
-    description: Edit the currently selected sign's line. You can use normal spaces.
+    description: Edit the currently selected sign's line. You can use normal spaces. Lines range from 1 to 4.
     usage: /<command> [Line] [Text...]
   toggleSignEdit:
     description: Toggle the ability to edit signs.
