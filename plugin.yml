@@ -4,7 +4,7 @@ version: 1.0
 
 commands:
   editSign:
-    description: Edit the currently selected sign. Use _ for space.
+    description: Edit the currently selected sign. Use _ for space and \n to leave an empty line.
     usage: /<command> [LineText1] [LineText2] [LineText3] [LineText4]
   editSignln:
     description: Edit the currently selected sign's line. You can use normal spaces. Lines range from 1 to 4.

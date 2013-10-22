@@ -5,6 +5,7 @@ import org.bukkit.*;
 import org.bukkit.block.*;
 import org.bukkit.command.*;
 import org.bukkit.entity.*;
+import org.bukkit.event.block.*;
 import org.bukkit.metadata.*;
 import org.bukkit.plugin.*;
 import org.bukkit.plugin.java.*;
@@ -54,10 +55,16 @@ public class SignEditor extends JavaPlugin {
                 if (editing) {
                     if (sign != null) {
                         for (int i = 0; i < Math.min(args.length, 4); i++) {
-                            String text = args[i].replace('_', ' ');
-                            sign.setLine(i, text);
+                            if (!args[i].equals("\\n")) {
+                                String text = args[i].replace('_', ' ');
+                                sign.setLine(i, text);
+                            }
                         }
 
+                        sign.update();
+
+                        //Needed for colors to appear.
+                        getServer().getPluginManager().callEvent(new SignChangeEvent(sign.getBlock(), p, sign.getLines()));
                         sign.update();
                     } else {
                         say(p, "No sign is active.");
@@ -84,6 +91,10 @@ public class SignEditor extends JavaPlugin {
                             }
 
                             sign.setLine(line - 1, sb.toString());
+                            sign.update();
+
+                            //Needed for colors to appear.
+                            getServer().getPluginManager().callEvent(new SignChangeEvent(sign.getBlock(), p, sign.getLines()));
                             sign.update();
                         } else {
                             say(p, "Invalid line number. Must be 1 to 4.");
