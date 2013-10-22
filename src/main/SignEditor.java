@@ -21,6 +21,7 @@ public class SignEditor extends JavaPlugin {
 	public static String signEdit = "SignEditor_editSign";
 	public static String sign = "SignEditor_activeSign";
 	public static String signLines = "SignEditor_signLinesArray";
+	public static String prevLocation = "SignEditor_previousLocation";
 
 	@Override
 	public void onEnable() {
@@ -159,6 +160,30 @@ public class SignEditor extends JavaPlugin {
 					return true;
 				}
 			}
+
+			if (cmd.getName().equalsIgnoreCase("tpToSign")) {
+				if (sign != null) {
+					setMetaData(p, prevLocation, p.getLocation(), this);
+					p.teleport(sign.getLocation());
+				} else {
+					say(p, "No sign is active.");
+				}
+
+				return true;
+			}
+
+			if (cmd.getName().equalsIgnoreCase("tpBackFromSign")) {
+				Location previousLocation = (Location) getMetadata(p, prevLocation, this);
+
+				if (previousLocation != null) {
+					p.teleport(previousLocation);
+				} else {
+					say(p, "No location has been logged. You must first use 'tpToSign'.");
+				}
+
+				return true;
+			}
+
 		} else {
 			sender.sendMessage("Sign Editor: You must be a player for this to work.");
 			return true;

@@ -24,3 +24,9 @@ commands:
   pasteSign:
     description: Pastes the stored sign text to the active sign.
     usage: /<command>
+  tpToSign:
+    description: Teleports you to the active sign.
+    usage: /<command>
+  tpBackFromSign:
+    description: Teleports you back from the active sign. Must have used 'tpToSign' first.
+    usage: /<command>
