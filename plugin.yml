@@ -9,6 +9,9 @@ commands:
   editSignln:
     description: Edit the currently selected sign's line. You can use normal spaces. Lines range from 1 to 4.
     usage: /<command> [Line1-4] [Text...]
+  switchln:
+    description: Switches two lines around.
+    usage: /<command> [Line1-4] [Line1-4]
   toggleSignEdit:
     description: Toggle the ability to edit signs.
     usage: /<command>

@@ -19,9 +19,10 @@ import org.bukkit.plugin.java.*;
 public class SignEditor extends JavaPlugin {
     public static Plugin plugin;
 
-    public static String signEdit     = "SignEditor_editSign";
-    public static String sign         = "SignEditor_activeSign";
-    public static String signLines    = "SignEditor_signLinesArray";
+    //Metadata keys
+    public static String signEdit = "SignEditor_editSign";
+    public static String sign = "SignEditor_activeSign";
+    public static String signLines = "SignEditor_signLinesArray";
     public static String prevLocation = "SignEditor_previousLocation";
 
     @Override
@@ -76,7 +77,17 @@ public class SignEditor extends JavaPlugin {
             if (cmd.getName().equalsIgnoreCase("editSignln")) {
                 if (editing) {
                     if (sign != null) {
-                        int line = Integer.parseInt(args[0]);
+                        int line = 0;
+
+                        if (args.length < 1) {
+                            return false;
+                        }
+
+                        try {
+                            line = Integer.parseInt(args[0]);
+                        } catch (NumberFormatException e) {
+                            return false;
+                        }
 
                         if (line > 0 && line < 5) {
                             StringBuilder sb = new StringBuilder();
@@ -96,6 +107,44 @@ public class SignEditor extends JavaPlugin {
                             say(p, "Invalid line number. Must be 1 to 4.");
                         }
 
+                    } else {
+                        say(p, "No sign is active.");
+                    }
+                } else {
+                    noSignEditMessage(p);
+                }
+
+                return true;
+            }
+
+            if (cmd.getName().equalsIgnoreCase("switchln")) {
+                if (editing) {
+                    if (sign != null) {
+                        if (args.length < 2) {
+                            return false;
+                        }
+
+                        int lineTargetNum = 0;
+                        int lineDestNum = 0;
+
+                        try {
+                            lineTargetNum = Integer.parseInt(args[0]) - 1;
+                            lineDestNum = Integer.parseInt(args[1]) - 1;
+                        } catch (NumberFormatException e) {
+                            return false;
+                        }
+
+                        if ((lineTargetNum >= 0 && lineTargetNum <= 3) && (lineDestNum >= 0 && lineDestNum <= 3)) {
+                            String lineTarget = sign.getLine(lineTargetNum);
+                            String lineDest = sign.getLine(lineDestNum);
+
+                            sign.setLine(lineDestNum, lineTarget);
+                            sign.setLine(lineTargetNum, lineDest);
+
+                            updateSign(p, sign);
+                        } else {
+                            say(p, "Invalid line number. Must be 1 to 4.");
+                        }
                     } else {
                         say(p, "No sign is active.");
                     }

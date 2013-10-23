@@ -6,3 +6,5 @@ TODO:
 
 Issues:
     Make sure to handle input with 'editSignln' correctly. If you pass a string as the first argument you get an error.
+    
+    Handle errors if there is no input on all commands.
