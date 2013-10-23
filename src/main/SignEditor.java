@@ -307,7 +307,7 @@ public class SignEditor extends JavaPlugin {
     }
 
     public static void say(Player p, String s) {
-        p.sendMessage(ChatColor.GOLD + "Sign Editor: " + ChatColor.WHITE + s);
+        p.sendMessage(ChatColor.GOLD + "[Sign Editor] " + ChatColor.WHITE + s);
     }
 
     public static void setMetaData(Player p, String key, Object value, Plugin plugin) {
