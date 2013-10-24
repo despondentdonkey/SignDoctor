@@ -1,18 +1,7 @@
 Ideas:
     Add a sign selection thing. So you can select multiple signs to edit at once.
     
-    Add config yml/txt file that allows you to configure the plugin:
-        Enable editing by default
-        Only allow right click selecting
-        
-    Namespace all commands by adding a prefix e.g. /signedit enable or /signedit switchln
-    
 TODO:
-    Add permissions
 
 Issues:
-    Make sure to handle input with 'editSignln' correctly. If you pass a string as the first argument you get an error.
-    
-    Handle errors if there is no input on all commands.
-    
     An issue can arise if your active sign gets destroyed and you try to edit it. Currently it doesn't give an error but the console will tell you something.
