@@ -21,10 +21,10 @@ public class SignEditor extends JavaPlugin {
     public static Plugin plugin;
 
     //Metadata keys
-    public static String signEdit = "SignEditor_editSign";
-    public static String sign = "SignEditor_activeSign";
-    public static String signLines = "SignEditor_signLinesArray";
-    public static String prevLocation = "SignEditor_previousLocation";
+    public static final String signEdit = "SignEditor_editSign";
+    public static final String sign = "SignEditor_activeSign";
+    public static final String signLines = "SignEditor_signLinesArray";
+    public static final String prevLocation = "SignEditor_previousLocation";
 
     public static FileConfiguration config;
     public static boolean enableEditing = false;
@@ -34,7 +34,7 @@ public class SignEditor extends JavaPlugin {
         plugin = this;
 
         config = this.getConfig();
-        enableEditing = config.getBoolean("enableEditing");
+        enableEditing = config.getBoolean("enableEditingByDefault");
 
         //Register events.
         getServer().getPluginManager().registerEvents(new SignEditorEvents(), this);
