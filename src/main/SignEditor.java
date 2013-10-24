@@ -4,6 +4,7 @@ import java.util.*;
 import org.bukkit.*;
 import org.bukkit.block.*;
 import org.bukkit.command.*;
+import org.bukkit.configuration.file.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.block.*;
 import org.bukkit.metadata.*;
@@ -25,9 +26,16 @@ public class SignEditor extends JavaPlugin {
     public static String signLines = "SignEditor_signLinesArray";
     public static String prevLocation = "SignEditor_previousLocation";
 
+    public static FileConfiguration config;
+    public static boolean enableEditing = false;
+
     @Override
     public void onEnable() {
         plugin = this;
+
+        config = this.getConfig();
+        enableEditing = config.getBoolean("enableEditing");
+
         //Register events.
         getServer().getPluginManager().registerEvents(new SignEditorEvents(), this);
     }
