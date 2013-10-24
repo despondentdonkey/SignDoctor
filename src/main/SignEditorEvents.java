@@ -31,15 +31,9 @@ public class SignEditorEvents implements Listener {
             if ((boolean) SignEditor.getMetadata(p, SignEditor.SIGN_EDIT, SignEditor.plugin)) {
                 if (clickedBlockState instanceof Sign) {
                     Sign s = (Sign) clickedBlockState;
-                    Sign prevSign = (Sign) SignEditor.getMetadata(p, SignEditor.SIGN, SignEditor.plugin);
 
-                    if (prevSign != null && prevSign.equals(s)) {
-                        p.setMetadata(SignEditor.SIGN, new FixedMetadataValue(SignEditor.plugin, null));
-                        SignEditor.say(p, "Sign inactive.");
-                    } else {
-                        p.setMetadata(SignEditor.SIGN, new FixedMetadataValue(SignEditor.plugin, s));
-                        SignEditor.say(p, "Sign active.");
-                    }
+                    p.setMetadata(SignEditor.SIGN, new FixedMetadataValue(SignEditor.plugin, s));
+                    SignEditor.say(p, "Sign active.");
                 }
             }
         }

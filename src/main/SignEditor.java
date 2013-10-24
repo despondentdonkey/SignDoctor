@@ -306,7 +306,7 @@ public class SignEditor extends JavaPlugin {
         s.update();
 
         getServer().getPluginManager().callEvent(new SignChangeEvent(s.getBlock(), p, s.getLines()));
-        //We must update again after the SignChangeEvent for colors to work.
+        //We must update again after the SignChangeEvent for colors to work. This also allows other plugins to be compatible.
         s.update();
     }
 
