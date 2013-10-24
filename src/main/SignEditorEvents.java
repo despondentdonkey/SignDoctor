@@ -1,6 +1,7 @@
 package main;
 
 import org.bukkit.block.*;
+import org.bukkit.entity.*;
 import org.bukkit.event.*;
 import org.bukkit.event.block.*;
 import org.bukkit.event.player.*;
@@ -16,28 +17,28 @@ public class SignEditorEvents implements Listener {
 
     @EventHandler()
     public void onLogin(PlayerLoginEvent e) {
-        e.getPlayer().setMetadata(SignEditor.signEdit, new FixedMetadataValue(SignEditor.plugin, SignEditor.enableEditing));
-        e.getPlayer().setMetadata(SignEditor.signLines, new FixedMetadataValue(SignEditor.plugin, new String[4]));
+        e.getPlayer().setMetadata(SignEditor.SIGN_EDIT, new FixedMetadataValue(SignEditor.plugin, SignEditor.enableEditing));
+        e.getPlayer().setMetadata(SignEditor.SIGN_LINES, new FixedMetadataValue(SignEditor.plugin, new String[4]));
     }
 
     @EventHandler()
     public void onInteract(PlayerInteractEvent e) {
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            if ((boolean) SignEditor.getMetadata(e.getPlayer(), SignEditor.signEdit, SignEditor.plugin)) {
-                Block clickedBlock = e.getClickedBlock();
+            Player p = e.getPlayer();
+            Block clickedBlock = e.getClickedBlock();
+            BlockState clickedBlockState = clickedBlock.getState();
 
-                BlockState clickedBlockState = clickedBlock.getState();
-
+            if ((boolean) SignEditor.getMetadata(p, SignEditor.SIGN_EDIT, SignEditor.plugin)) {
                 if (clickedBlockState instanceof Sign) {
                     Sign s = (Sign) clickedBlockState;
-                    Sign prevSign = (Sign) SignEditor.getMetadata(e.getPlayer(), SignEditor.sign, SignEditor.plugin);
+                    Sign prevSign = (Sign) SignEditor.getMetadata(p, SignEditor.SIGN, SignEditor.plugin);
 
                     if (prevSign != null && prevSign.equals(s)) {
-                        e.getPlayer().setMetadata(SignEditor.sign, new FixedMetadataValue(SignEditor.plugin, null));
-                        SignEditor.say(e.getPlayer(), "Sign inactive.");
+                        p.setMetadata(SignEditor.SIGN, new FixedMetadataValue(SignEditor.plugin, null));
+                        SignEditor.say(p, "Sign inactive.");
                     } else {
-                        e.getPlayer().setMetadata(SignEditor.sign, new FixedMetadataValue(SignEditor.plugin, s));
-                        SignEditor.say(e.getPlayer(), "Sign active.");
+                        p.setMetadata(SignEditor.SIGN, new FixedMetadataValue(SignEditor.plugin, s));
+                        SignEditor.say(p, "Sign active.");
                     }
                 }
             }

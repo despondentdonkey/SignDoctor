@@ -21,10 +21,15 @@ public class SignEditor extends JavaPlugin {
     public static Plugin plugin;
 
     //Metadata keys
-    public static final String signEdit = "SignEditor_editSign";
-    public static final String sign = "SignEditor_activeSign";
-    public static final String signLines = "SignEditor_signLinesArray";
-    public static final String prevLocation = "SignEditor_previousLocation";
+    public static final String SIGN_EDIT = "SignEditor_editSign";
+    public static final String SIGN = "SignEditor_activeSign";
+    public static final String SIGN_LINES = "SignEditor_signLinesArray";
+    public static final String PREV_LOCATION = "SignEditor_previousLocation";
+
+    //Messages
+    public static final String MSG_EDIT_DISABLED = "Sign editing is not enabled. To enable, use the command: toggleSignEdit";
+    public static final String MSG_NO_ACTIVE_SIGN = "No sign is active.";
+    public static final String MSG_INVALID_LINE_NUM = "Invalid line number. Must be 1 to 4.";
 
     public static FileConfiguration config;
     public static boolean enableEditing = false;
@@ -48,12 +53,12 @@ public class SignEditor extends JavaPlugin {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender instanceof Player) {
             Player p = (Player) sender;
-            boolean editing = (boolean) getMetadata(p, signEdit, this);
-            Sign sign = (Sign) getMetadata(p, SignEditor.sign, this);
+            boolean editing = (boolean) getMetadata(p, SIGN_EDIT, this);
+            Sign sign = (Sign) getMetadata(p, SignEditor.SIGN, this);
 
             //Toggle sign edit command.
             if (cmd.getName().equalsIgnoreCase("toggleSignEdit")) {
-                p.setMetadata(signEdit, new FixedMetadataValue(this, !editing));
+                p.setMetadata(SIGN_EDIT, new FixedMetadataValue(this, !editing));
                 say(p, !editing ? "Editing has been enabled." : "Editing has been disabled.");
 
                 return true;
@@ -72,10 +77,10 @@ public class SignEditor extends JavaPlugin {
 
                         updateSign(p, sign);
                     } else {
-                        say(p, "No sign is active.");
+                        say(p, MSG_NO_ACTIVE_SIGN);
                     }
                 } else {
-                    noSignEditMessage(p);
+                    say(p, MSG_EDIT_DISABLED);
                 }
 
                 return true;
@@ -112,14 +117,14 @@ public class SignEditor extends JavaPlugin {
 
                             updateSign(p, sign);
                         } else {
-                            say(p, "Invalid line number. Must be 1 to 4.");
+                            say(p, MSG_INVALID_LINE_NUM);
                         }
 
                     } else {
-                        say(p, "No sign is active.");
+                        say(p, MSG_NO_ACTIVE_SIGN);
                     }
                 } else {
-                    noSignEditMessage(p);
+                    say(p, MSG_EDIT_DISABLED);
                 }
 
                 return true;
@@ -151,13 +156,13 @@ public class SignEditor extends JavaPlugin {
 
                             updateSign(p, sign);
                         } else {
-                            say(p, "Invalid line number. Must be 1 to 4.");
+                            say(p, MSG_INVALID_LINE_NUM);
                         }
                     } else {
-                        say(p, "No sign is active.");
+                        say(p, MSG_NO_ACTIVE_SIGN);
                     }
                 } else {
-                    noSignEditMessage(p);
+                    say(p, MSG_EDIT_DISABLED);
                 }
 
                 return true;
@@ -192,7 +197,7 @@ public class SignEditor extends JavaPlugin {
             if (cmd.getName().equalsIgnoreCase("pasteSign")) {
                 if (editing) {
                     if (sign != null) {
-                        String[] sl = (String[]) getMetadata(p, signLines, this);
+                        String[] sl = (String[]) getMetadata(p, SIGN_LINES, this);
 
                         for (int i = 0; i < sl.length; i++) {
                             sign.setLine(i, sl[i]);
@@ -201,28 +206,28 @@ public class SignEditor extends JavaPlugin {
                         sign.update();
                         return true;
                     } else {
-                        say(p, "No sign is active.");
+                        say(p, MSG_NO_ACTIVE_SIGN);
                         return true;
                     }
                 } else {
-                    noSignEditMessage(p);
+                    say(p, MSG_EDIT_DISABLED);
                     return true;
                 }
             }
 
             if (cmd.getName().equalsIgnoreCase("tpToSign")) {
                 if (sign != null) {
-                    setMetaData(p, prevLocation, p.getLocation(), this);
+                    p.setMetadata(PREV_LOCATION, new FixedMetadataValue(this, p.getLocation()));
                     p.teleport(sign.getLocation());
                 } else {
-                    say(p, "No sign is active.");
+                    say(p, MSG_NO_ACTIVE_SIGN);
                 }
 
                 return true;
             }
 
             if (cmd.getName().equalsIgnoreCase("tpBackFromSign")) {
-                Location previousLocation = (Location) getMetadata(p, prevLocation, this);
+                Location previousLocation = (Location) getMetadata(p, PREV_LOCATION, this);
 
                 if (previousLocation != null) {
                     p.teleport(previousLocation);
@@ -243,8 +248,8 @@ public class SignEditor extends JavaPlugin {
     }
 
     public boolean copyActiveSign(Player p) {
-        boolean editing = (boolean) getMetadata(p, signEdit, this);
-        Sign sign = (Sign) getMetadata(p, SignEditor.sign, this);
+        boolean editing = (boolean) getMetadata(p, SIGN_EDIT, this);
+        Sign sign = (Sign) getMetadata(p, SignEditor.SIGN, this);
 
         if (editing) {
             if (sign != null) {
@@ -254,22 +259,22 @@ public class SignEditor extends JavaPlugin {
                     sl[i] = sign.getLine(i);
                 }
 
-                p.setMetadata(signLines, new FixedMetadataValue(this, sl));
+                p.setMetadata(SIGN_LINES, new FixedMetadataValue(this, sl));
 
                 return true;
             } else {
-                say(p, "No sign is active.");
+                say(p, MSG_NO_ACTIVE_SIGN);
                 return false;
             }
         } else {
-            noSignEditMessage(p);
+            say(p, MSG_EDIT_DISABLED);
             return false;
         }
     }
 
     public boolean clearActiveSign(Player p) {
-        boolean editing = (boolean) getMetadata(p, signEdit, this);
-        Sign sign = (Sign) getMetadata(p, SignEditor.sign, this);
+        boolean editing = (boolean) getMetadata(p, SIGN_EDIT, this);
+        Sign sign = (Sign) getMetadata(p, SignEditor.SIGN, this);
 
         if (editing) {
             if (sign != null) {
@@ -281,11 +286,11 @@ public class SignEditor extends JavaPlugin {
 
                 return true;
             } else {
-                say(p, "No sign is active.");
+                say(p, MSG_NO_ACTIVE_SIGN);
                 return false;
             }
         } else {
-            noSignEditMessage(p);
+            say(p, MSG_EDIT_DISABLED);
             return false;
         }
     }
@@ -305,21 +310,8 @@ public class SignEditor extends JavaPlugin {
         s.update();
     }
 
-    /**
-     * Common message shown when editing is disabled.
-     * 
-     * @param s The player to send the message to.
-     */
-    public static void noSignEditMessage(Player p) {
-        say(p, "Sign editing is not enabled. To enable, use the command: toggleSignEdit");
-    }
-
     public static void say(Player p, String s) {
         p.sendMessage(ChatColor.GOLD + "[Sign Editor] " + ChatColor.WHITE + s);
-    }
-
-    public static void setMetaData(Player p, String key, Object value, Plugin plugin) {
-        p.setMetadata(key, new FixedMetadataValue(plugin, value));
     }
 
     public static Object getMetadata(Player player, String key, Plugin plugin) {
