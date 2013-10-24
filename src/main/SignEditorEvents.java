@@ -17,7 +17,9 @@ public class SignEditorEvents implements Listener {
 
     @EventHandler()
     public void onLogin(PlayerLoginEvent e) {
-        e.getPlayer().setMetadata(SignEditor.SIGN_EDIT, new FixedMetadataValue(SignEditor.plugin, SignEditor.enableEditing));
+        boolean enableEditing = e.getPlayer().hasPermission(SignEditor.PERM_EDIT) ? SignEditor.enableEditing : false;
+
+        e.getPlayer().setMetadata(SignEditor.SIGN_EDIT, new FixedMetadataValue(SignEditor.plugin, enableEditing));
         e.getPlayer().setMetadata(SignEditor.SIGN_LINES, new FixedMetadataValue(SignEditor.plugin, new String[4]));
     }
 

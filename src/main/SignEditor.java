@@ -31,6 +31,8 @@ public class SignEditor extends JavaPlugin {
     public static final String MSG_NO_ACTIVE_SIGN = "No sign is active.";
     public static final String MSG_INVALID_LINE_NUM = "Invalid line number. Must be 1 to 4.";
 
+    public static final String PERM_EDIT = "signediting";
+
     public static FileConfiguration config;
     public static boolean enableEditing = false;
 
@@ -55,6 +57,11 @@ public class SignEditor extends JavaPlugin {
             Player p = (Player) sender;
             boolean editing = (boolean) getMetadata(p, SIGN_EDIT, this);
             Sign sign = (Sign) getMetadata(p, SignEditor.SIGN, this);
+
+            if (!p.hasPermission(PERM_EDIT)) {
+                say(p, "You do not have permission to edit signs.");
+                return true;
+            }
 
             //Toggle sign edit command.
             if (cmd.getName().equalsIgnoreCase("toggleSignEdit")) {

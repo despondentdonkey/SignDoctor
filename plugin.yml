@@ -33,3 +33,8 @@ commands:
   tpBackFromSign:
     description: Teleports you back from the active sign. Must have used 'tpToSign' first.
     usage: /<command>
+
+permissions:
+  signediting:
+    description: Allows the editing of signs.
+    default: op
