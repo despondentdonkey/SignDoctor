@@ -110,7 +110,6 @@ public class SignEditor extends JavaPlugin {
                         }
 
                         updateSign(p, sign);
-
                         return true;
                     }
 
@@ -199,26 +198,25 @@ public class SignEditor extends JavaPlugin {
 
                     //Clear sign command.
                     if (cmd.getName().equalsIgnoreCase("clearSign")) {
-                        clearActiveSign(p);
+                        clearSign(sign);
+                        updateSign(p, sign);
                         return true;
                     }
 
                     //Copy sign command.
                     if (cmd.getName().equalsIgnoreCase("copySign")) {
-                        if (copyActiveSign(p)) {
-                            say(p, "Sign has been copied.");
-                        }
-
+                        copySign(p, sign);
+                        say(p, "Sign has been copied.");
                         return true;
                     }
 
                     //Cut sign command.
                     if (cmd.getName().equalsIgnoreCase("cutSign")) {
-                        if (copyActiveSign(p)) {
-                            clearActiveSign(p);
-                            say(p, "Sign has been cut.");
-                        }
+                        copySign(p, sign);
+                        clearSign(sign);
+                        updateSign(p, sign);
 
+                        say(p, "Sign has been cut.");
                         return true;
                     }
 
@@ -230,7 +228,7 @@ public class SignEditor extends JavaPlugin {
                             sign.setLine(i, sl[i]);
                         }
 
-                        sign.update();
+                        updateSign(p, sign);
                         return true;
                     }
                 } else {
@@ -243,58 +241,25 @@ public class SignEditor extends JavaPlugin {
             }
         } else {
             sender.sendMessage("Sign Editor: You must be a player for this to work.");
-
             return true;
         }
 
         return false;
     }
 
-    public boolean copyActiveSign(Player p) {
-        boolean editing = (boolean) getMetadata(p, SIGN_EDIT, this);
-        Sign sign = (Sign) getMetadata(p, SignEditor.SIGN, this);
+    public void copySign(Player p, Sign s) {
+        String[] sl = new String[4];
 
-        if (editing) {
-            if (sign != null) {
-                String[] sl = new String[4];
-
-                for (int i = 0; i < sl.length; i++) {
-                    sl[i] = sign.getLine(i);
-                }
-
-                p.setMetadata(SIGN_LINES, new FixedMetadataValue(this, sl));
-
-                return true;
-            } else {
-                say(p, MSG_NO_ACTIVE_SIGN);
-                return false;
-            }
-        } else {
-            say(p, MSG_EDIT_DISABLED);
-            return false;
+        for (int i = 0; i < sl.length; i++) {
+            sl[i] = s.getLine(i);
         }
+
+        p.setMetadata(SIGN_LINES, new FixedMetadataValue(this, sl));
     }
 
-    public boolean clearActiveSign(Player p) {
-        boolean editing = (boolean) getMetadata(p, SIGN_EDIT, this);
-        Sign sign = (Sign) getMetadata(p, SignEditor.SIGN, this);
-
-        if (editing) {
-            if (sign != null) {
-                for (int i = 0; i < 4; ++i) {
-                    sign.setLine(i, "");
-                }
-
-                sign.update();
-
-                return true;
-            } else {
-                say(p, MSG_NO_ACTIVE_SIGN);
-                return false;
-            }
-        } else {
-            say(p, MSG_EDIT_DISABLED);
-            return false;
+    public void clearSign(Sign s) {
+        for (int i = 0; i < 4; ++i) {
+            s.setLine(i, "");
         }
     }
 
@@ -343,6 +308,8 @@ public class SignEditor extends JavaPlugin {
         //We must update again after the SignChangeEvent for colors to work. This also allows other plugins to be compatible.
         s.update();
     }
+
+    //Static methods
 
     public static void say(Player p, String s) {
         p.sendMessage(ChatColor.GOLD + "[Sign Editor] " + ChatColor.WHITE + s);
