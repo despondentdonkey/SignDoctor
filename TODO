@@ -1,7 +1,10 @@
 Ideas:
     Add a sign selection thing. So you can select multiple signs to edit at once.
     
+    Add an append thing so you can just add onto a line. Would also work nicely with the multi-sign selection thing.
+    
 TODO:
+    Add more permissions (One for every command)
 
 Issues:
     An issue can arise if your active sign gets destroyed and you try to edit it. Currently it doesn't give an error but the console will tell you something.

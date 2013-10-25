@@ -35,6 +35,7 @@ public class SignEditor extends JavaPlugin {
 
     public static FileConfiguration config;
     public static boolean enableEditing = false;
+    public static String spacingStr = "_";
 
     @Override
     public void onEnable() {
@@ -42,6 +43,7 @@ public class SignEditor extends JavaPlugin {
 
         config = this.getConfig();
         enableEditing = config.getBoolean("enableEditingByDefault");
+        spacingStr = config.getString("spacingStr");
 
         //Register events.
         getServer().getPluginManager().registerEvents(new SignEditorEvents(), this);
@@ -77,7 +79,7 @@ public class SignEditor extends JavaPlugin {
                     if (sign != null) {
                         for (int i = 0; i < Math.min(args.length, 4); i++) {
                             if (!args[i].equals("\\n")) {
-                                String text = args[i].replace('_', ' ');
+                                String text = args[i].replaceAll(spacingStr, " ");
                                 sign.setLine(i, text);
                             }
                         }
@@ -135,6 +137,26 @@ public class SignEditor extends JavaPlugin {
                 }
 
                 return true;
+            }
+
+            if (cmd.getName().equalsIgnoreCase("TESTappendToSign")) {
+                if (editing) {
+                    if (sign != null) {
+                        int lnNum = Integer.parseInt(args[0]) - 1;
+                        String ln = sign.getLine(lnNum);
+
+                        StringBuilder sb = new StringBuilder(ln);
+                        sb.append(args[1]);
+
+                        sign.setLine(lnNum, sb.toString());
+
+                        updateSign(p, sign);
+                    } else {
+                        say(p, MSG_NO_ACTIVE_SIGN);
+                    }
+                } else {
+                    say(p, MSG_EDIT_DISABLED);
+                }
             }
 
             if (cmd.getName().equalsIgnoreCase("switchln")) {
