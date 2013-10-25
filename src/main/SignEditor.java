@@ -47,7 +47,6 @@ public class SignEditor extends JavaPlugin {
         spacingStr = config.getString("spacingStr");
         newlineStr = config.getString("newlineStr");
 
-        //Register events.
         getServer().getPluginManager().registerEvents(new SignEditorEvents(), this);
     }
 
@@ -67,6 +66,7 @@ public class SignEditor extends JavaPlugin {
                 return true;
             }
 
+            //tpToSign command
             if (cmd.getName().equalsIgnoreCase("tpToSign")) {
                 if (sign != null) {
                     p.setMetadata(PREV_LOCATION, new FixedMetadataValue(this, p.getLocation()));
@@ -78,6 +78,7 @@ public class SignEditor extends JavaPlugin {
                 return true;
             }
 
+            //tpBackFromSign command
             if (cmd.getName().equalsIgnoreCase("tpBackFromSign")) {
                 Location previousLocation = (Location) getMetadata(p, PREV_LOCATION, this);
 
@@ -138,6 +139,7 @@ public class SignEditor extends JavaPlugin {
                         return true;
                     }
 
+                    //appendToSign command
                     if (cmd.getName().equalsIgnoreCase("appendToSign")) {
                         int line = 0;
 
@@ -166,13 +168,14 @@ public class SignEditor extends JavaPlugin {
                         }
                     }
 
+                    //switchln command
                     if (cmd.getName().equalsIgnoreCase("switchln")) {
+                        int lineTargetNum = 0;
+                        int lineDestNum = 0;
+
                         if (args.length < 2) {
                             return false;
                         }
-
-                        int lineTargetNum = 0;
-                        int lineDestNum = 0;
 
                         try {
                             lineTargetNum = Integer.parseInt(args[0]) - 1;
@@ -247,6 +250,12 @@ public class SignEditor extends JavaPlugin {
         return false;
     }
 
+    /**
+     * Copies a sign and stores it into the player's clipboard.
+     * 
+     * @param p
+     * @param s
+     */
     public void copySign(Player p, Sign s) {
         String[] sl = new String[4];
 
