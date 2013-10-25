@@ -1,6 +1,16 @@
 Ideas:
     Add a sign selection thing. So you can select multiple signs to edit at once.
-    
+        /toggleMultiSignEdit # Keeps all the signs selected stored even if you toggle it off.
+        /clearSelectedSigns # Clears the stored array of signs selected.
+        
+        Right clicking a sign can toggle it from selection.
+        
+        Most commands would work the same except for:
+        Copy/Cut: These would just copy/cut from the active sign
+        
+        In order for this to work you need to create functions for each command so that you can loop over the selected signs and execute the functions. 
+        You should also try to improve the design somehow.
+        
     Add an append thing so you can just add onto a line. Would also work nicely with the multi-sign selection thing.
     
 TODO:
