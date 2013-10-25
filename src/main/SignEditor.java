@@ -67,18 +67,41 @@ public class SignEditor extends JavaPlugin {
                 return true;
             }
 
-            //Toggle sign edit command.
-            if (cmd.getName().equalsIgnoreCase("toggleSignEdit")) {
-                p.setMetadata(SIGN_EDIT, new FixedMetadataValue(this, !editing));
-                say(p, !editing ? "Editing has been enabled." : "Editing has been disabled.");
+            if (cmd.getName().equalsIgnoreCase("tpToSign")) {
+                if (sign != null) {
+                    p.setMetadata(PREV_LOCATION, new FixedMetadataValue(this, p.getLocation()));
+                    p.teleport(sign.getLocation());
+                } else {
+                    say(p, MSG_NO_ACTIVE_SIGN);
+                }
 
                 return true;
             }
 
-            //Edit sign command.
-            if (cmd.getName().equalsIgnoreCase("editSign")) {
-                if (editing) {
-                    if (sign != null) {
+            if (cmd.getName().equalsIgnoreCase("tpBackFromSign")) {
+                Location previousLocation = (Location) getMetadata(p, PREV_LOCATION, this);
+
+                if (previousLocation != null) {
+                    p.teleport(previousLocation);
+                } else {
+                    say(p, "No location has been logged. You must first use 'tpToSign'.");
+                }
+
+                return true;
+            }
+
+            if (editing) {
+                if (sign != null) {
+                    //Toggle sign edit command.
+                    if (cmd.getName().equalsIgnoreCase("toggleSignEdit")) {
+                        p.setMetadata(SIGN_EDIT, new FixedMetadataValue(this, !editing));
+                        say(p, !editing ? "Editing has been enabled." : "Editing has been disabled.");
+
+                        return true;
+                    }
+
+                    //Edit sign command.
+                    if (cmd.getName().equalsIgnoreCase("editSign")) {
                         for (int i = 0; i < Math.min(args.length, 4); i++) {
                             say(p, args[i]);
                             if (!args[i].equals(newlineStr)) {
@@ -88,20 +111,12 @@ public class SignEditor extends JavaPlugin {
                         }
 
                         updateSign(p, sign);
-                    } else {
-                        say(p, MSG_NO_ACTIVE_SIGN);
+
+                        return true;
                     }
-                } else {
-                    say(p, MSG_EDIT_DISABLED);
-                }
 
-                return true;
-            }
-
-            //Edit sign line command.
-            if (cmd.getName().equalsIgnoreCase("editSignln")) {
-                if (editing) {
-                    if (sign != null) {
+                    //Edit sign line command.
+                    if (cmd.getName().equalsIgnoreCase("editSignln")) {
                         int line = 0;
 
                         if (args.length < 1) {
@@ -132,19 +147,10 @@ public class SignEditor extends JavaPlugin {
                             say(p, MSG_INVALID_LINE_NUM);
                         }
 
-                    } else {
-                        say(p, MSG_NO_ACTIVE_SIGN);
+                        return true;
                     }
-                } else {
-                    say(p, MSG_EDIT_DISABLED);
-                }
 
-                return true;
-            }
-
-            if (cmd.getName().equalsIgnoreCase("TESTappendToSign")) {
-                if (editing) {
-                    if (sign != null) {
+                    if (cmd.getName().equalsIgnoreCase("TESTappendToSign")) {
                         int lnNum = Integer.parseInt(args[0]) - 1;
                         String ln = sign.getLine(lnNum);
 
@@ -154,17 +160,9 @@ public class SignEditor extends JavaPlugin {
                         sign.setLine(lnNum, sb.toString());
 
                         updateSign(p, sign);
-                    } else {
-                        say(p, MSG_NO_ACTIVE_SIGN);
                     }
-                } else {
-                    say(p, MSG_EDIT_DISABLED);
-                }
-            }
 
-            if (cmd.getName().equalsIgnoreCase("switchln")) {
-                if (editing) {
-                    if (sign != null) {
+                    if (cmd.getName().equalsIgnoreCase("switchln")) {
                         if (args.length < 2) {
                             return false;
                         }
@@ -190,45 +188,37 @@ public class SignEditor extends JavaPlugin {
                         } else {
                             say(p, MSG_INVALID_LINE_NUM);
                         }
-                    } else {
-                        say(p, MSG_NO_ACTIVE_SIGN);
+
+                        return true;
                     }
-                } else {
-                    say(p, MSG_EDIT_DISABLED);
-                }
 
-                return true;
-            }
+                    //Clear sign command.
+                    if (cmd.getName().equalsIgnoreCase("clearSign")) {
+                        clearActiveSign(p);
+                        return true;
+                    }
 
-            //Clear sign command.
-            if (cmd.getName().equalsIgnoreCase("clearSign")) {
-                clearActiveSign(p);
-                return true;
-            }
+                    //Copy sign command.
+                    if (cmd.getName().equalsIgnoreCase("copySign")) {
+                        if (copyActiveSign(p)) {
+                            say(p, "Sign has been copied.");
+                        }
 
-            //Copy sign command.
-            if (cmd.getName().equalsIgnoreCase("copySign")) {
-                if (copyActiveSign(p)) {
-                    say(p, "Sign has been copied.");
-                }
+                        return true;
+                    }
 
-                return true;
-            }
+                    //Cut sign command.
+                    if (cmd.getName().equalsIgnoreCase("cutSign")) {
+                        if (copyActiveSign(p)) {
+                            clearActiveSign(p);
+                            say(p, "Sign has been cut.");
+                        }
 
-            //Cut sign command.
-            if (cmd.getName().equalsIgnoreCase("cutSign")) {
-                if (copyActiveSign(p)) {
-                    clearActiveSign(p);
-                    say(p, "Sign has been cut.");
-                }
+                        return true;
+                    }
 
-                return true;
-            }
-
-            //Paste sign command.
-            if (cmd.getName().equalsIgnoreCase("pasteSign")) {
-                if (editing) {
-                    if (sign != null) {
+                    //Paste sign command.
+                    if (cmd.getName().equalsIgnoreCase("pasteSign")) {
                         String[] sl = (String[]) getMetadata(p, SIGN_LINES, this);
 
                         for (int i = 0; i < sl.length; i++) {
@@ -237,39 +227,15 @@ public class SignEditor extends JavaPlugin {
 
                         sign.update();
                         return true;
-                    } else {
-                        say(p, MSG_NO_ACTIVE_SIGN);
-                        return true;
                     }
                 } else {
-                    say(p, MSG_EDIT_DISABLED);
+                    say(p, MSG_NO_ACTIVE_SIGN);
                     return true;
                 }
-            }
-
-            if (cmd.getName().equalsIgnoreCase("tpToSign")) {
-                if (sign != null) {
-                    p.setMetadata(PREV_LOCATION, new FixedMetadataValue(this, p.getLocation()));
-                    p.teleport(sign.getLocation());
-                } else {
-                    say(p, MSG_NO_ACTIVE_SIGN);
-                }
-
+            } else {
+                say(p, MSG_EDIT_DISABLED);
                 return true;
             }
-
-            if (cmd.getName().equalsIgnoreCase("tpBackFromSign")) {
-                Location previousLocation = (Location) getMetadata(p, PREV_LOCATION, this);
-
-                if (previousLocation != null) {
-                    p.teleport(previousLocation);
-                } else {
-                    say(p, "No location has been logged. You must first use 'tpToSign'.");
-                }
-
-                return true;
-            }
-
         } else {
             sender.sendMessage("Sign Editor: You must be a player for this to work.");
 
