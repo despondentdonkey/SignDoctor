@@ -102,8 +102,7 @@ public class SignEditor extends JavaPlugin {
 
                     //Edit sign command.
                     if (cmd.getName().equalsIgnoreCase("editSign")) {
-                        for (int i = 0; i < Math.min(args.length, 4); i++) {
-                            say(p, args[i]);
+                        for (int i = 0; i < Math.min(args.length, 4); ++i) {
                             if (!args[i].equals(newlineStr)) {
                                 String text = args[i].replaceAll(spacingStr, " ");
                                 sign.setLine(i, text);
@@ -124,12 +123,12 @@ public class SignEditor extends JavaPlugin {
                         }
 
                         try {
-                            line = Integer.parseInt(args[0]);
+                            line = Integer.parseInt(args[0]) - 1;
                         } catch (NumberFormatException e) {
                             return false;
                         }
 
-                        if (line > 0 && line < 5) {
+                        if (isValidLine(line)) {
                             StringBuilder sb = new StringBuilder();
 
                             for (int i = 1; i < args.length; ++i) {
@@ -140,7 +139,7 @@ public class SignEditor extends JavaPlugin {
                                     sb.append(" ");
                             }
 
-                            sign.setLine(line - 1, sb.toString());
+                            sign.setLine(line, sb.toString());
 
                             updateSign(p, sign);
                         } else {
@@ -150,16 +149,32 @@ public class SignEditor extends JavaPlugin {
                         return true;
                     }
 
-                    if (cmd.getName().equalsIgnoreCase("TESTappendToSign")) {
-                        int lnNum = Integer.parseInt(args[0]) - 1;
-                        String ln = sign.getLine(lnNum);
+                    if (cmd.getName().equalsIgnoreCase("appendToSign")) {
+                        int line = 0;
 
-                        StringBuilder sb = new StringBuilder(ln);
-                        sb.append(args[1]);
+                        if (args.length < 2) {
+                            return false;
+                        }
 
-                        sign.setLine(lnNum, sb.toString());
+                        try {
+                            line = Integer.parseInt(args[0]) - 1;
+                        } catch (NumberFormatException e) {
+                            return false;
+                        }
 
-                        updateSign(p, sign);
+                        if (isValidLine(line)) {
+                            String lineText = sign.getLine(line);
+                            String appendText = args[1].replaceAll(spacingStr, " ");
+
+                            sign.setLine(line, lineText + appendText);
+
+                            updateSign(p, sign);
+
+                            return true;
+                        } else {
+                            say(p, MSG_INVALID_LINE_NUM);
+                            return true;
+                        }
                     }
 
                     if (cmd.getName().equalsIgnoreCase("switchln")) {
@@ -177,7 +192,7 @@ public class SignEditor extends JavaPlugin {
                             return false;
                         }
 
-                        if ((lineTargetNum >= 0 && lineTargetNum <= 3) && (lineDestNum >= 0 && lineDestNum <= 3)) {
+                        if (isValidLine(lineTargetNum) && isValidLine(lineDestNum)) {
                             String lineTarget = sign.getLine(lineTargetNum);
                             String lineDest = sign.getLine(lineDestNum);
 
@@ -291,6 +306,10 @@ public class SignEditor extends JavaPlugin {
             say(p, MSG_EDIT_DISABLED);
             return false;
         }
+    }
+
+    public boolean isValidLine(int line) {
+        return (line >= 0 && line <= 3);
     }
 
     /**
