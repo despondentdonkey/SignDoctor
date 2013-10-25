@@ -36,6 +36,7 @@ public class SignEditor extends JavaPlugin {
     public static FileConfiguration config;
     public static boolean enableEditing = false;
     public static String spacingStr = "_";
+    public static String newlineStr = "\\n";
 
     @Override
     public void onEnable() {
@@ -44,6 +45,7 @@ public class SignEditor extends JavaPlugin {
         config = this.getConfig();
         enableEditing = config.getBoolean("enableEditingByDefault");
         spacingStr = config.getString("spacingStr");
+        newlineStr = config.getString("newlineStr");
 
         //Register events.
         getServer().getPluginManager().registerEvents(new SignEditorEvents(), this);
@@ -78,7 +80,8 @@ public class SignEditor extends JavaPlugin {
                 if (editing) {
                     if (sign != null) {
                         for (int i = 0; i < Math.min(args.length, 4); i++) {
-                            if (!args[i].equals("\\n")) {
+                            say(p, args[i]);
+                            if (!args[i].equals(newlineStr)) {
                                 String text = args[i].replaceAll(spacingStr, " ");
                                 sign.setLine(i, text);
                             }
