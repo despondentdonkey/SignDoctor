@@ -129,18 +129,8 @@ public class SignEditor extends JavaPlugin {
                         }
 
                         if (isValidLine(line)) {
-                            StringBuilder sb = new StringBuilder();
-
-                            for (int i = 1; i < args.length; ++i) {
-                                sb.append(args[i]);
-
-                                //Add a space if it is not the last element.
-                                if (i < args.length - 1)
-                                    sb.append(" ");
-                            }
-
-                            sign.setLine(line, sb.toString());
-
+                            String mergedStr = mergeStrings(Arrays.copyOfRange(args, 1, args.length));
+                            sign.setLine(line, mergedStr);
                             updateSign(p, sign);
                         } else {
                             say(p, MSG_INVALID_LINE_NUM);
@@ -164,7 +154,7 @@ public class SignEditor extends JavaPlugin {
 
                         if (isValidLine(line)) {
                             String lineText = sign.getLine(line);
-                            String appendText = args[1].replaceAll(spacingStr, " ");
+                            String appendText = mergeStrings(Arrays.copyOfRange(args, 1, args.length));
 
                             sign.setLine(line, lineText + appendText);
 
@@ -308,8 +298,35 @@ public class SignEditor extends JavaPlugin {
         }
     }
 
+    /**
+     * Checks if a integer is a valid line number. (0-3)
+     * 
+     * @param line The line number you want to check, starting from 0 ending at 3.
+     * @return
+     */
     public boolean isValidLine(int line) {
         return (line >= 0 && line <= 3);
+    }
+
+    /**
+     * Merges an array of strings into one string. It also formats it to use spacingStr and spaces after each element.
+     * 
+     * @param args
+     * @return The merged string
+     */
+    public String mergeStrings(String[] args) {
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < args.length; ++i) {
+            getServer().getLogger().info(args[i]);
+            sb.append(args[i]);
+
+            //Add a space if it is not the last element.
+            if (i < args.length - 1)
+                sb.append(" ");
+        }
+
+        return sb.toString().replaceAll(spacingStr, " ");
     }
 
     /**
