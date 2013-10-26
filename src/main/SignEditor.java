@@ -187,6 +187,8 @@ public class SignEditor extends JavaPlugin {
 
                         if (isValidLine(line)) {
                             String lineText = sign.getLine(line);
+                            String regex = args[1].replaceAll(spacingStr, " ");
+                            String replacement = args[2];
                             boolean replaceAll = false;
 
                             if (args.length >= 4) {
@@ -199,9 +201,9 @@ public class SignEditor extends JavaPlugin {
 
                             try {
                                 if (replaceAll) {
-                                    lineText = lineText.replaceAll(args[1], args[2]);
+                                    lineText = lineText.replaceAll(regex, replacement);
                                 } else {
-                                    lineText = lineText.replaceFirst(args[1], args[2]);
+                                    lineText = lineText.replaceFirst(regex, replacement);
                                 }
                             } catch (PatternSyntaxException e) {
                                 say(p, "Regex syntax incorrect.");
