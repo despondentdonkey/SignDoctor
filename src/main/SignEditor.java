@@ -1,6 +1,7 @@
 package main;
 
 import java.util.*;
+import java.util.regex.*;
 import org.bukkit.*;
 import org.bukkit.block.*;
 import org.bukkit.command.*;
@@ -165,6 +166,49 @@ public class SignEditor extends JavaPlugin {
 
                             sign.setLine(line, lineText + appendText);
 
+                            updateSign(p, sign);
+
+                            return true;
+                        } else {
+                            say(p, MSG_INVALID_LINE_NUM);
+                            return true;
+                        }
+                    }
+
+                    //replaceln command
+                    if (cmd.getName().equalsIgnoreCase("replaceln")) {
+                        int line = 0;
+
+                        try {
+                            line = Integer.parseInt(args[0]) - 1;
+                        } catch (NumberFormatException e) {
+                            return false;
+                        }
+
+                        if (isValidLine(line)) {
+                            String lineText = sign.getLine(line);
+                            boolean replaceAll = false;
+
+                            if (args.length >= 4) {
+                                try {
+                                    replaceAll = Boolean.parseBoolean(args[3]);
+                                } catch (NumberFormatException e) {
+                                    return false;
+                                }
+                            }
+
+                            try {
+                                if (replaceAll) {
+                                    lineText = lineText.replaceAll(args[1], args[2]);
+                                } else {
+                                    lineText = lineText.replaceFirst(args[1], args[2]);
+                                }
+                            } catch (PatternSyntaxException e) {
+                                say(p, "Regex syntax incorrect.");
+                                return true;
+                            }
+
+                            sign.setLine(line, lineText);
                             updateSign(p, sign);
 
                             return true;
