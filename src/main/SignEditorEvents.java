@@ -29,7 +29,7 @@ public class SignEditorEvents implements Listener {
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
             Player p = e.getPlayer();
 
-            if (p.getItemInHand().getData().getItemType() == Material.FEATHER) {
+            if (SignEditor.noSelector || p.getItemInHand().getData().getItemType() == Material.getMaterial(SignEditor.selectorItem)) {
                 Block clickedBlock = e.getClickedBlock();
                 BlockState clickedBlockState = clickedBlock.getState();
 

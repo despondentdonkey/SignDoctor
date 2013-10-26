@@ -37,6 +37,9 @@ public class SignEditor extends JavaPlugin {
     public static boolean enableEditing = false;
     public static String spacingStr = "_";
     public static String newlineStr = "\\n";
+    public static String selectorItem = "FEATHER";
+
+    public static boolean noSelector = false;
 
     @Override
     public void onEnable() {
@@ -46,6 +49,9 @@ public class SignEditor extends JavaPlugin {
         enableEditing = config.getBoolean("enableEditingByDefault");
         spacingStr = config.getString("spacingStr");
         newlineStr = config.getString("newlineStr");
+        selectorItem = config.getString("selectorItem").toUpperCase();
+
+        noSelector = (selectorItem.isEmpty() || selectorItem.equalsIgnoreCase("NULL"));
 
         getServer().getPluginManager().registerEvents(new SignEditorEvents(), this);
     }
