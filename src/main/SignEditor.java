@@ -37,7 +37,7 @@ public class SignEditor extends JavaPlugin {
     public static FileConfiguration config;
     public static boolean enableEditing = false;
     public static String spacingStr = "_";
-    public static String newlineStr = "\\n";
+    public static String blankStr = "\\n";
     public static String selectorItem = "FEATHER";
 
     public static boolean noSelector = false;
@@ -49,7 +49,7 @@ public class SignEditor extends JavaPlugin {
         config = this.getConfig();
         enableEditing = config.getBoolean("enableEditingByDefault");
         spacingStr = config.getString("spacingStr");
-        newlineStr = config.getString("newlineStr");
+        blankStr = config.getString("blankStr");
         selectorItem = config.getString("selectorItem").toUpperCase();
 
         noSelector = (selectorItem.isEmpty() || selectorItem.equalsIgnoreCase("NULL"));
@@ -111,7 +111,7 @@ public class SignEditor extends JavaPlugin {
                     //Edit sign command.
                     if (cmd.getName().equalsIgnoreCase("editSign")) {
                         for (int i = 0; i < Math.min(args.length, 4); ++i) {
-                            if (!args[i].equals(newlineStr)) {
+                            if (!args[i].equals(blankStr)) {
                                 String text = args[i].replaceAll(spacingStr, " ");
                                 sign.setLine(i, text);
                             }

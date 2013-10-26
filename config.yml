@@ -1,4 +1,4 @@
 enableEditingByDefault: true
-spacingStr: "_"   # The string used to simulate a space.
-newlineStr: "\\n" # The string used to skip a line.
+spacingStr: "_" # The string used to simulate a space.
+blankStr: "\\n" # The string used to simulate blank lines.
 selectorItem: "FEATHER"
