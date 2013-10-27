@@ -1,4 +1,4 @@
-package main;
+package signeditor;
 
 import org.bukkit.*;
 import org.bukkit.block.*;
@@ -33,7 +33,7 @@ public class SignEditorEvents implements Listener {
                 Block clickedBlock = e.getClickedBlock();
                 BlockState clickedBlockState = clickedBlock.getState();
 
-                if ((boolean) SignEditor.getMetadata(p, SignEditor.SIGN_EDIT, SignEditor.plugin)) {
+                if (SignEditor.isEditing(p)) {
                     if (clickedBlockState instanceof Sign) {
                         Sign s = (Sign) clickedBlockState;
 

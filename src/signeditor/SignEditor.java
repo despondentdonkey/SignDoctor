@@ -1,4 +1,4 @@
-package main;
+package signeditor;
 
 import java.util.*;
 import java.util.regex.*;
@@ -103,7 +103,6 @@ public class SignEditor extends JavaPlugin {
                     if (cmd.getName().equalsIgnoreCase("toggleSignEdit")) {
                         setEditing(p, !editing);
                         say(p, !editing ? "Editing has been enabled." : "Editing has been disabled.");
-
                         return true;
                     }
 
@@ -139,7 +138,7 @@ public class SignEditor extends JavaPlugin {
 
                         try {
                             int line = Integer.parseInt(args[0]) - 1;
-                            appendToSign(p, sign, line, Arrays.copyOfRange(args, 1, args.length));
+                            appendToSign(sign, line, Arrays.copyOfRange(args, 1, args.length));
                             updateSign(p, sign);
                             return true;
                         } catch (NumberFormatException e) {
@@ -351,10 +350,10 @@ public class SignEditor extends JavaPlugin {
         }
     }
 
-    public static void appendToSign(Player p, Sign s, int line, String args[]) throws InvalidLineException {
+    public static void appendToSign(Sign s, int line, String args[]) throws InvalidLineException {
         if (isValidLine(line)) {
             String lineText = s.getLine(line);
-            String appendText = mergeStrings(Arrays.copyOfRange(args, 1, args.length));
+            String appendText = mergeStrings(args);
 
             s.setLine(line, lineText + appendText);
         } else {

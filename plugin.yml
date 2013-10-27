@@ -1,5 +1,5 @@
 name: Sign Editor
-main: main.SignEditor
+main: signeditor.SignEditor
 version: 1.0
 
 commands:
