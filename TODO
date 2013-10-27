@@ -15,6 +15,8 @@ Ideas:
     
 TODO:
     Add more permissions (One for every command)
+    
+    Make command functions throw exceptions rather than trying to say the messages. So we need an exception handler class that can handle stuff like INVALID_LINE_NUM.
 
 Issues:
     An issue can arise if your active sign gets destroyed and you try to edit it. Currently it doesn't give an error but the console will tell you something.

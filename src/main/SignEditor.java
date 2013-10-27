@@ -30,7 +30,6 @@ public class SignEditor extends JavaPlugin {
     //Messages
     public static final String MSG_EDIT_DISABLED = "Sign editing is not enabled. To enable, use the command: toggleSignEdit";
     public static final String MSG_NO_ACTIVE_SIGN = "No sign is active.";
-    public static final String MSG_INVALID_LINE_NUM = "Invalid line number. Must be 1 to 4.";
 
     public static final String PERM_EDIT = "signediting";
 
@@ -102,7 +101,7 @@ public class SignEditor extends JavaPlugin {
                 if (sign != null) {
                     //Toggle sign edit command.
                     if (cmd.getName().equalsIgnoreCase("toggleSignEdit")) {
-                        p.setMetadata(SIGN_EDIT, new FixedMetadataValue(this, !editing));
+                        setEditing(p, !editing);
                         say(p, !editing ? "Editing has been enabled." : "Editing has been disabled.");
 
                         return true;
@@ -110,145 +109,96 @@ public class SignEditor extends JavaPlugin {
 
                     //Edit sign command.
                     if (cmd.getName().equalsIgnoreCase("editSign")) {
-                        for (int i = 0; i < Math.min(args.length, 4); ++i) {
-                            if (!args[i].equals(blankStr)) {
-                                String text = args[i].replaceAll(spacingStr, " ");
-                                sign.setLine(i, text);
-                            }
-                        }
-
+                        editSign(sign, args);
                         updateSign(p, sign);
                         return true;
                     }
 
                     //Edit sign line command.
                     if (cmd.getName().equalsIgnoreCase("editSignln")) {
-                        int line = 0;
-
-                        if (args.length < 1) {
+                        if (args.length < 1)
                             return false;
-                        }
 
                         try {
-                            line = Integer.parseInt(args[0]) - 1;
+                            int line = Integer.parseInt(args[0]) - 1;
+                            editSignln(sign, line, Arrays.copyOfRange(args, 1, args.length));
+                            updateSign(p, sign);
+                            return true;
                         } catch (NumberFormatException e) {
                             return false;
+                        } catch (InvalidLineException e) {
+                            say(p, e.getMessage());
+                            return true;
                         }
-
-                        if (isValidLine(line)) {
-                            String mergedStr = mergeStrings(Arrays.copyOfRange(args, 1, args.length));
-                            sign.setLine(line, mergedStr);
-                            updateSign(p, sign);
-                        } else {
-                            say(p, MSG_INVALID_LINE_NUM);
-                        }
-
-                        return true;
                     }
 
                     //appendToSign command
                     if (cmd.getName().equalsIgnoreCase("appendToSign")) {
-                        int line = 0;
-
-                        if (args.length < 2) {
+                        if (args.length < 2)
                             return false;
-                        }
 
                         try {
-                            line = Integer.parseInt(args[0]) - 1;
+                            int line = Integer.parseInt(args[0]) - 1;
+                            appendToSign(p, sign, line, Arrays.copyOfRange(args, 1, args.length));
+                            updateSign(p, sign);
+                            return true;
                         } catch (NumberFormatException e) {
                             return false;
-                        }
-
-                        if (isValidLine(line)) {
-                            String lineText = sign.getLine(line);
-                            String appendText = mergeStrings(Arrays.copyOfRange(args, 1, args.length));
-
-                            sign.setLine(line, lineText + appendText);
-
-                            updateSign(p, sign);
-
-                            return true;
-                        } else {
-                            say(p, MSG_INVALID_LINE_NUM);
+                        } catch (InvalidLineException e) {
+                            say(p, e.getMessage());
                             return true;
                         }
                     }
 
                     //replaceln command
                     if (cmd.getName().equalsIgnoreCase("replaceln")) {
+                        if (args.length < 3)
+                            return false;
+
                         int line = 0;
+                        boolean replaceAll = false;
 
                         try {
                             line = Integer.parseInt(args[0]) - 1;
+                            if (args.length >= 4) {
+                                replaceAll = Boolean.parseBoolean(args[3]);
+                            }
                         } catch (NumberFormatException e) {
                             return false;
                         }
 
-                        if (isValidLine(line)) {
-                            String lineText = sign.getLine(line);
-                            String regex = args[1].replaceAll(spacingStr, " ");
-                            String replacement = args[2];
-                            boolean replaceAll = false;
-
-                            if (args.length >= 4) {
-                                try {
-                                    replaceAll = Boolean.parseBoolean(args[3]);
-                                } catch (NumberFormatException e) {
-                                    return false;
-                                }
-                            }
-
-                            try {
-                                if (replaceAll) {
-                                    lineText = lineText.replaceAll(regex, replacement);
-                                } else {
-                                    lineText = lineText.replaceFirst(regex, replacement);
-                                }
-                            } catch (PatternSyntaxException e) {
-                                say(p, "Regex syntax incorrect.");
-                                return true;
-                            }
-
-                            sign.setLine(line, lineText);
-                            updateSign(p, sign);
-
+                        try {
+                            replaceln(sign, line, args[1], args[2], replaceAll);
+                        } catch (PatternSyntaxException e) {
+                            say(p, "Regex syntax is incorrect.");
                             return true;
-                        } else {
-                            say(p, MSG_INVALID_LINE_NUM);
+                        } catch (InvalidLineException e) {
+                            say(p, e.getMessage());
                             return true;
                         }
+
+                        updateSign(p, sign);
+                        return true;
                     }
 
                     //switchln command
                     if (cmd.getName().equalsIgnoreCase("switchln")) {
-                        int lineTargetNum = 0;
-                        int lineDestNum = 0;
-
                         if (args.length < 2) {
                             return false;
                         }
 
                         try {
-                            lineTargetNum = Integer.parseInt(args[0]) - 1;
-                            lineDestNum = Integer.parseInt(args[1]) - 1;
+                            int lineTargetNum = Integer.parseInt(args[0]) - 1;
+                            int lineDestNum = Integer.parseInt(args[1]) - 1;
+                            switchln(sign, lineTargetNum, lineDestNum);
+                            updateSign(p, sign);
+                            return true;
                         } catch (NumberFormatException e) {
                             return false;
+                        } catch (InvalidLineException e) {
+                            say(p, e.getMessage());
+                            return true;
                         }
-
-                        if (isValidLine(lineTargetNum) && isValidLine(lineDestNum)) {
-                            String lineTarget = sign.getLine(lineTargetNum);
-                            String lineDest = sign.getLine(lineDestNum);
-
-                            sign.setLine(lineDestNum, lineTarget);
-                            sign.setLine(lineTargetNum, lineDest);
-
-                            updateSign(p, sign);
-                        } else {
-                            say(p, MSG_INVALID_LINE_NUM);
-                        }
-
-                        return true;
                     }
 
                     //Clear sign command.
@@ -277,12 +227,7 @@ public class SignEditor extends JavaPlugin {
 
                     //Paste sign command.
                     if (cmd.getName().equalsIgnoreCase("pasteSign")) {
-                        String[] sl = (String[]) getMetadata(p, SIGN_LINES, this);
-
-                        for (int i = 0; i < sl.length; i++) {
-                            sign.setLine(i, sl[i]);
-                        }
-
+                        pasteSign(sign, (String[]) getMetadata(p, SIGN_LINES, this));
                         updateSign(p, sign);
                         return true;
                     }
@@ -302,25 +247,39 @@ public class SignEditor extends JavaPlugin {
         return false;
     }
 
+    public static void setEditing(Player p, boolean val) {
+        p.setMetadata(SIGN_EDIT, new FixedMetadataValue(plugin, val));
+    }
+
+    public static boolean isEditing(Player p) {
+        return (boolean) getMetadata(p, SIGN_EDIT, plugin);
+    }
+
     /**
      * Copies a sign and stores it into the player's clipboard.
      * 
      * @param p
      * @param s
      */
-    public void copySign(Player p, Sign s) {
+    public static void copySign(Player p, Sign s) {
         String[] sl = new String[4];
 
         for (int i = 0; i < sl.length; i++) {
             sl[i] = s.getLine(i);
         }
 
-        p.setMetadata(SIGN_LINES, new FixedMetadataValue(this, sl));
+        p.setMetadata(SIGN_LINES, new FixedMetadataValue(plugin, sl));
     }
 
-    public void clearSign(Sign s) {
+    public static void clearSign(Sign s) {
         for (int i = 0; i < 4; ++i) {
             s.setLine(i, "");
+        }
+    }
+
+    public static void pasteSign(Sign s, String lines[]) {
+        for (int i = 0; i < lines.length; i++) {
+            s.setLine(i, lines[i]);
         }
     }
 
@@ -330,7 +289,7 @@ public class SignEditor extends JavaPlugin {
      * @param line The line number you want to check, starting from 0 ending at 3.
      * @return
      */
-    public boolean isValidLine(int line) {
+    public static boolean isValidLine(int line) {
         return (line >= 0 && line <= 3);
     }
 
@@ -340,11 +299,11 @@ public class SignEditor extends JavaPlugin {
      * @param args
      * @return The merged string
      */
-    public String mergeStrings(String[] args) {
+    public static String mergeStrings(String[] args) {
         StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < args.length; ++i) {
-            getServer().getLogger().info(args[i]);
+            Bukkit.getServer().getLogger().info(args[i]);
             sb.append(args[i]);
 
             //Add a space if it is not the last element.
@@ -361,19 +320,75 @@ public class SignEditor extends JavaPlugin {
      * @param p The player who updated the sign.
      * @param s The sign you want to update.
      */
-    public void updateSign(Player p, Sign s) {
+    public static void updateSign(Player p, Sign s) {
         //The first update is used to change the text of the sign just in case the SignChangeEvent blocks it. This is used mostly to support Lockette.
         s.update();
 
-        getServer().getPluginManager().callEvent(new SignChangeEvent(s.getBlock(), p, s.getLines()));
+        Bukkit.getServer().getPluginManager().callEvent(new SignChangeEvent(s.getBlock(), p, s.getLines()));
         //We must update again after the SignChangeEvent for colors to work. This also allows other plugins to be compatible.
         s.update();
     }
 
-    //Static methods
-
     public static void say(Player p, String s) {
         p.sendMessage(ChatColor.GOLD + "[Sign Editor] " + ChatColor.WHITE + s);
+    }
+
+    public static void editSign(Sign s, String lines[]) {
+        for (int i = 0; i < Math.min(lines.length, 4); ++i) {
+            if (!lines[i].equals(blankStr)) {
+                String text = lines[i].replaceAll(spacingStr, " ");
+                s.setLine(i, text);
+            }
+        }
+    }
+
+    public static void editSignln(Sign s, int line, String args[]) throws InvalidLineException {
+        if (isValidLine(line)) {
+            String mergedStr = mergeStrings(args);
+            s.setLine(line, mergedStr);
+        } else {
+            throw new InvalidLineException();
+        }
+    }
+
+    public static void appendToSign(Player p, Sign s, int line, String args[]) throws InvalidLineException {
+        if (isValidLine(line)) {
+            String lineText = s.getLine(line);
+            String appendText = mergeStrings(Arrays.copyOfRange(args, 1, args.length));
+
+            s.setLine(line, lineText + appendText);
+        } else {
+            throw new InvalidLineException();
+        }
+    }
+
+    public static void replaceln(Sign s, int line, String regex, String replacement, boolean replaceAll) throws InvalidLineException, PatternSyntaxException {
+        if (isValidLine(line)) {
+            String lineText = s.getLine(line);
+            regex = regex.replaceAll(spacingStr, " ");
+
+            if (replaceAll) {
+                lineText = lineText.replaceAll(regex, replacement);
+            } else {
+                lineText = lineText.replaceFirst(regex, replacement);
+            }
+
+            s.setLine(line, lineText);
+        } else {
+            throw new InvalidLineException();
+        }
+    }
+
+    public static void switchln(Sign s, int lineTargetNum, int lineDestNum) throws InvalidLineException {
+        if (isValidLine(lineTargetNum) && isValidLine(lineDestNum)) {
+            String lineTarget = s.getLine(lineTargetNum);
+            String lineDest = s.getLine(lineDestNum);
+
+            s.setLine(lineDestNum, lineTarget);
+            s.setLine(lineTargetNum, lineDest);
+        } else {
+            throw new InvalidLineException();
+        }
     }
 
     public static Object getMetadata(Player player, String key, Plugin plugin) {
