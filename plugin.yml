@@ -8,7 +8,7 @@ commands:
     usage: /<command> [LineText1] [LineText2] [LineText3] [LineText4]
   editSignln:
     description: Edit the currently selected sign's line. You can use normal spaces. Lines range from 1 to 4.
-    usage: /<command> [Line1-4] [Text...]
+    usage: /<command> [Line1-4] [Optional Text...]
   appendToSign:
     description: Append text to the currently selected sign's line. You can use normal spaces. Lines range from 1 to 4.
     usage: /<command> [Line1-4] [Text...]
@@ -16,8 +16,11 @@ commands:
     description: Prepend text to the currently selected sign's line. You can use normal spaces. Lines range from 1 to 4.
     usage: /<command> [Line1-4] [Text...]
   replaceln:
-    description: Replaces text which matches the regular expression. If all is set to true it will replace all occurrences of the regex, otherwise just the first. All is default to false.
-    usage: /<command> [Line1-4] [Regex] [Text] [All true/false]
+    description: Replaces the first text occurrence which matches the regular expression.
+    usage: /<command> [Line1-4] [Regex] [Optional Text]
+  replacelnAll:
+    description: Replaces all text occurrences which matches the regular expression.
+    usage: /<command> [Line1-4] [Regex] [Optional Text]
   switchln:
     description: Switches two lines around.
     usage: /<command> [Line1-4] [Line1-4]
