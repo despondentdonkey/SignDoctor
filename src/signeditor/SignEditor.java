@@ -136,6 +136,17 @@ public class SignEditor extends JavaPlugin {
                             return true;
                         }
 
+                        //prependToSign command
+                        if (cmd.getName().equalsIgnoreCase("prependToSign")) {
+                            if (args.length < 2)
+                                return false;
+
+                            int line = Integer.parseInt(args[0]) - 1;
+                            prependToSign(sign, line, Arrays.copyOfRange(args, 1, args.length));
+                            updateSign(p, sign);
+                            return true;
+                        }
+
                         //replaceln command
                         if (cmd.getName().equalsIgnoreCase("replaceln")) {
                             if (args.length < 3)
@@ -334,6 +345,17 @@ public class SignEditor extends JavaPlugin {
             String appendText = mergeStrings(args);
 
             s.setLine(line, lineText + appendText);
+        } else {
+            throw new InvalidLineException();
+        }
+    }
+
+    public static void prependToSign(Sign s, int line, String args[]) throws InvalidLineException {
+        if (isValidLine(line)) {
+            String lineText = s.getLine(line);
+            String prependText = mergeStrings(args);
+
+            s.setLine(line, prependText + lineText);
         } else {
             throw new InvalidLineException();
         }
