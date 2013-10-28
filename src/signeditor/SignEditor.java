@@ -99,135 +99,113 @@ public class SignEditor extends JavaPlugin {
 
             if (editing) {
                 if (sign != null) {
-                    //Toggle sign edit command.
-                    if (cmd.getName().equalsIgnoreCase("toggleSignEdit")) {
-                        setEditing(p, !editing);
-                        say(p, !editing ? "Editing has been enabled." : "Editing has been disabled.");
-                        return true;
-                    }
+                    try {
+                        //Toggle sign edit command.
+                        if (cmd.getName().equalsIgnoreCase("toggleSignEdit")) {
+                            setEditing(p, !editing);
+                            say(p, !editing ? "Editing has been enabled." : "Editing has been disabled.");
+                            return true;
+                        }
 
-                    //Edit sign command.
-                    if (cmd.getName().equalsIgnoreCase("editSign")) {
-                        editSign(sign, args);
-                        updateSign(p, sign);
-                        return true;
-                    }
+                        //Edit sign command.
+                        if (cmd.getName().equalsIgnoreCase("editSign")) {
+                            editSign(sign, args);
+                            updateSign(p, sign);
+                            return true;
+                        }
 
-                    //Edit sign line command.
-                    if (cmd.getName().equalsIgnoreCase("editSignln")) {
-                        if (args.length < 1)
-                            return false;
+                        //Edit sign line command.
+                        if (cmd.getName().equalsIgnoreCase("editSignln")) {
+                            if (args.length < 1)
+                                return false;
 
-                        try {
                             int line = Integer.parseInt(args[0]) - 1;
                             editSignln(sign, line, Arrays.copyOfRange(args, 1, args.length));
                             updateSign(p, sign);
                             return true;
-                        } catch (NumberFormatException e) {
-                            return false;
-                        } catch (InvalidLineException e) {
-                            say(p, e.getMessage());
-                            return true;
                         }
-                    }
 
-                    //appendToSign command
-                    if (cmd.getName().equalsIgnoreCase("appendToSign")) {
-                        if (args.length < 2)
-                            return false;
+                        //appendToSign command
+                        if (cmd.getName().equalsIgnoreCase("appendToSign")) {
+                            if (args.length < 2)
+                                return false;
 
-                        try {
                             int line = Integer.parseInt(args[0]) - 1;
                             appendToSign(sign, line, Arrays.copyOfRange(args, 1, args.length));
                             updateSign(p, sign);
                             return true;
-                        } catch (NumberFormatException e) {
-                            return false;
-                        } catch (InvalidLineException e) {
-                            say(p, e.getMessage());
-                            return true;
                         }
-                    }
 
-                    //replaceln command
-                    if (cmd.getName().equalsIgnoreCase("replaceln")) {
-                        if (args.length < 3)
-                            return false;
+                        //replaceln command
+                        if (cmd.getName().equalsIgnoreCase("replaceln")) {
+                            if (args.length < 3)
+                                return false;
 
-                        int line = 0;
-                        boolean replaceAll = false;
+                            boolean replaceAll = false;
+                            int line = Integer.parseInt(args[0]) - 1;
 
-                        try {
-                            line = Integer.parseInt(args[0]) - 1;
                             if (args.length >= 4) {
                                 replaceAll = Boolean.parseBoolean(args[3]);
                             }
-                        } catch (NumberFormatException e) {
-                            return false;
-                        }
 
-                        try {
-                            replaceln(sign, line, args[1], args[2], replaceAll);
-                        } catch (PatternSyntaxException e) {
-                            say(p, "Regex syntax is incorrect.");
-                            return true;
-                        } catch (InvalidLineException e) {
-                            say(p, e.getMessage());
+                            try {
+                                replaceln(sign, line, args[1], args[2], replaceAll);
+                            } catch (PatternSyntaxException e) {
+                                say(p, "Regex syntax is incorrect.");
+                                return true;
+                            }
+
+                            updateSign(p, sign);
                             return true;
                         }
 
-                        updateSign(p, sign);
-                        return true;
-                    }
+                        //switchln command
+                        if (cmd.getName().equalsIgnoreCase("switchln")) {
+                            if (args.length < 2) {
+                                return false;
+                            }
 
-                    //switchln command
-                    if (cmd.getName().equalsIgnoreCase("switchln")) {
-                        if (args.length < 2) {
-                            return false;
-                        }
-
-                        try {
                             int lineTargetNum = Integer.parseInt(args[0]) - 1;
                             int lineDestNum = Integer.parseInt(args[1]) - 1;
                             switchln(sign, lineTargetNum, lineDestNum);
                             updateSign(p, sign);
                             return true;
-                        } catch (NumberFormatException e) {
-                            return false;
-                        } catch (InvalidLineException e) {
-                            say(p, e.getMessage());
+                        }
+
+                        //Clear sign command.
+                        if (cmd.getName().equalsIgnoreCase("clearSign")) {
+                            clearSign(sign);
+                            updateSign(p, sign);
                             return true;
                         }
-                    }
 
-                    //Clear sign command.
-                    if (cmd.getName().equalsIgnoreCase("clearSign")) {
-                        clearSign(sign);
-                        updateSign(p, sign);
-                        return true;
-                    }
+                        //Copy sign command.
+                        if (cmd.getName().equalsIgnoreCase("copySign")) {
+                            copySign(p, sign);
+                            say(p, "Sign has been copied.");
+                            return true;
+                        }
 
-                    //Copy sign command.
-                    if (cmd.getName().equalsIgnoreCase("copySign")) {
-                        copySign(p, sign);
-                        say(p, "Sign has been copied.");
-                        return true;
-                    }
+                        //Cut sign command.
+                        if (cmd.getName().equalsIgnoreCase("cutSign")) {
+                            copySign(p, sign);
+                            clearSign(sign);
+                            updateSign(p, sign);
 
-                    //Cut sign command.
-                    if (cmd.getName().equalsIgnoreCase("cutSign")) {
-                        copySign(p, sign);
-                        clearSign(sign);
-                        updateSign(p, sign);
+                            say(p, "Sign has been cut.");
+                            return true;
+                        }
 
-                        say(p, "Sign has been cut.");
-                        return true;
-                    }
-
-                    //Paste sign command.
-                    if (cmd.getName().equalsIgnoreCase("pasteSign")) {
-                        pasteSign(sign, (String[]) getMetadata(p, SIGN_LINES, this));
-                        updateSign(p, sign);
+                        //Paste sign command.
+                        if (cmd.getName().equalsIgnoreCase("pasteSign")) {
+                            pasteSign(sign, (String[]) getMetadata(p, SIGN_LINES, this));
+                            updateSign(p, sign);
+                            return true;
+                        }
+                    } catch (NumberFormatException e) {
+                        return false;
+                    } catch (InvalidLineException e) {
+                        say(p, e.getMessage());
                         return true;
                     }
                 } else {
