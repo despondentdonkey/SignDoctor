@@ -149,18 +149,20 @@ public class SignEditor extends JavaPlugin {
 
                         //replaceln command
                         if (cmd.getName().equalsIgnoreCase("replaceln")) {
-                            if (args.length < 3)
-                                return false;
-
+                            String replacement = "";
                             boolean replaceAll = false;
                             int line = Integer.parseInt(args[0]) - 1;
 
-                            if (args.length >= 4) {
+                            if (args.length < 2)
+                                return false;
+                            else if (args.length >= 3)
+                                replacement = args[2];
+
+                            if (args.length >= 4)
                                 replaceAll = Boolean.parseBoolean(args[3]);
-                            }
 
                             try {
-                                replaceln(sign, line, args[1], args[2], replaceAll);
+                                replaceln(sign, line, args[1], replacement, replaceAll);
                             } catch (PatternSyntaxException e) {
                                 say(p, "Regex syntax is incorrect.");
                                 return true;
@@ -364,7 +366,7 @@ public class SignEditor extends JavaPlugin {
     public static void replaceln(Sign s, int line, String regex, String replacement, boolean replaceAll) throws InvalidLineException, PatternSyntaxException {
         if (isValidLine(line)) {
             String lineText = s.getLine(line);
-            regex = regex.replaceAll(spacingStr, " ");
+            replacement = replacement.replaceAll(spacingStr, " ").replaceAll("\\" + blankStr, "");
 
             if (replaceAll) {
                 lineText = lineText.replaceAll(regex, replacement);
