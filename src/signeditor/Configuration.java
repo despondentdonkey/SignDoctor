@@ -22,10 +22,6 @@ public class Configuration {
         //Save but do not replace if it exists.
         plugin.saveResource("config.yml", false);
 
-        for (String key : config.getKeys(false)) {
-            plugin.getLogger().info(key);
-        }
-
         //Load config from the folder.
         FileConfiguration jarConfig = new YamlConfiguration();
         try {
