@@ -1,4 +1,4 @@
-package signeditor;
+package signdoctor;
 
 import java.util.*;
 import java.util.regex.*;
@@ -17,20 +17,20 @@ import org.bukkit.plugin.java.*;
  * @author Parker Miller
  * 
  */
-public class SignEditor extends JavaPlugin {
+public class SignDoctor extends JavaPlugin {
     public static Plugin plugin;
 
     //Metadata keys
-    public static final String SIGN_EDIT = "SignEditor_editSign";
-    public static final String SIGN = "SignEditor_activeSign";
-    public static final String SIGN_LINES = "SignEditor_signLinesArray";
-    public static final String PREV_LOCATION = "SignEditor_previousLocation";
+    public static final String SIGN_EDIT = "SignDoctor_editSign";
+    public static final String SIGN = "SignDoctor_activeSign";
+    public static final String SIGN_LINES = "SignDoctor_signLinesArray";
+    public static final String PREV_LOCATION = "SignDoctor_previousLocation";
 
     //Messages
     public static final String MSG_EDIT_DISABLED = "Sign editing is not enabled. To enable, use the command: toggleSignEdit";
     public static final String MSG_NO_ACTIVE_SIGN = "No sign is active.";
 
-    public static final String PERM_EDIT = "signediting";
+    public static final String PERM_EDIT = "signdoctor.signediting";
 
     public static Configuration config;
 
@@ -44,7 +44,7 @@ public class SignEditor extends JavaPlugin {
 
         noSelector = (config.selectorItem.isEmpty() || config.selectorItem.equalsIgnoreCase("NULL"));
 
-        getServer().getPluginManager().registerEvents(new SignEditorEvents(), this);
+        getServer().getPluginManager().registerEvents(new SignDoctorEvents(), this);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class SignEditor extends JavaPlugin {
         if (sender instanceof Player) {
             Player p = (Player) sender;
             boolean editing = (boolean) getMetadata(p, SIGN_EDIT, this);
-            Sign sign = (Sign) getMetadata(p, SignEditor.SIGN, this);
+            Sign sign = (Sign) getMetadata(p, SignDoctor.SIGN, this);
 
             if (!p.hasPermission(PERM_EDIT)) {
                 say(p, "You do not have permission to edit signs.");
@@ -218,7 +218,7 @@ public class SignEditor extends JavaPlugin {
                 return true;
             }
         } else {
-            sender.sendMessage("Sign Editor: You must be a player for this to work.");
+            sender.sendMessage("Sign Doctor: You must be a player for this to work.");
             return true;
         }
 
@@ -308,7 +308,7 @@ public class SignEditor extends JavaPlugin {
     }
 
     public static void say(Player p, String s) {
-        p.sendMessage(ChatColor.GOLD + "[Sign Editor] " + ChatColor.WHITE + s);
+        p.sendMessage(ChatColor.GOLD + "[Sign Doctor] " + ChatColor.WHITE + s);
     }
 
     public static void editSign(Sign s, String lines[]) {

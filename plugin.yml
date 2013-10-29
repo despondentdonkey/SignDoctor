@@ -1,5 +1,5 @@
-name: SignEditor
-main: signeditor.SignEditor
+name: SignDoctor
+main: signdoctor.SignDoctor
 version: 1.0
 
 commands:
@@ -47,6 +47,6 @@ commands:
     usage: /<command>
 
 permissions:
-  signediting:
+  signdoctor.signediting:
     description: Allows the editing of signs.
     default: op

@@ -1,4 +1,4 @@
-package signeditor;
+package signdoctor;
 
 public class InvalidLineException extends Exception {
 

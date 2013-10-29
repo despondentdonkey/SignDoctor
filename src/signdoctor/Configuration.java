@@ -1,4 +1,4 @@
-package signeditor;
+package signdoctor;
 
 import java.io.*;
 import java.util.*;
