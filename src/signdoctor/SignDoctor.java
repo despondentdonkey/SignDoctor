@@ -88,16 +88,16 @@ public class SignDoctor extends JavaPlugin {
                 return true;
             }
 
+            //Toggle sign edit command.
+            if (cmd.getName().equalsIgnoreCase("toggleSignEdit")) {
+                setEditing(p, !editing);
+                say(p, !editing ? "Editing has been enabled." : "Editing has been disabled.");
+                return true;
+            }
+
             if (editing) {
                 if (sign != null) {
                     try {
-                        //Toggle sign edit command.
-                        if (cmd.getName().equalsIgnoreCase("toggleSignEdit")) {
-                            setEditing(p, !editing);
-                            say(p, !editing ? "Editing has been enabled." : "Editing has been disabled.");
-                            return true;
-                        }
-
                         //Edit sign command.
                         if (cmd.getName().equalsIgnoreCase("editSign")) {
                             editSign(sign, args);
