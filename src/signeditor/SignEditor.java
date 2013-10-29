@@ -5,7 +5,6 @@ import java.util.regex.*;
 import org.bukkit.*;
 import org.bukkit.block.*;
 import org.bukkit.command.*;
-import org.bukkit.configuration.file.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.block.*;
 import org.bukkit.metadata.*;
@@ -33,11 +32,7 @@ public class SignEditor extends JavaPlugin {
 
     public static final String PERM_EDIT = "signediting";
 
-    public static FileConfiguration config;
-    public static boolean enableEditing = false;
-    public static String spacingStr = "_";
-    public static String blankStr = "\\n";
-    public static String selectorItem = "FEATHER";
+    public static Configuration config;
 
     public static boolean noSelector = false;
 
@@ -45,13 +40,9 @@ public class SignEditor extends JavaPlugin {
     public void onEnable() {
         plugin = this;
 
-        config = this.getConfig();
-        enableEditing = config.getBoolean("enableEditingByDefault");
-        spacingStr = config.getString("spacingStr");
-        blankStr = config.getString("blankStr");
-        selectorItem = config.getString("selectorItem").toUpperCase();
+        config = new Configuration(this);
 
-        noSelector = (selectorItem.isEmpty() || selectorItem.equalsIgnoreCase("NULL"));
+        noSelector = (config.selectorItem.isEmpty() || config.selectorItem.equalsIgnoreCase("NULL"));
 
         getServer().getPluginManager().registerEvents(new SignEditorEvents(), this);
     }
@@ -298,7 +289,7 @@ public class SignEditor extends JavaPlugin {
                 sb.append(" ");
         }
 
-        return sb.toString().replaceAll(spacingStr, " ");
+        return sb.toString().replaceAll(config.spacingStr, " ");
     }
 
     /**
@@ -322,8 +313,8 @@ public class SignEditor extends JavaPlugin {
 
     public static void editSign(Sign s, String lines[]) {
         for (int i = 0; i < Math.min(lines.length, 4); ++i) {
-            if (!lines[i].equals(blankStr)) {
-                String text = lines[i].replaceAll(spacingStr, " ");
+            if (!lines[i].equals(config.blankStr)) {
+                String text = lines[i].replaceAll(config.spacingStr, " ");
                 s.setLine(i, text);
             }
         }
@@ -363,7 +354,7 @@ public class SignEditor extends JavaPlugin {
     public static void replaceln(Sign s, int line, String regex, String replacement, boolean replaceAll) throws InvalidLineException, PatternSyntaxException {
         if (isValidLine(line)) {
             String lineText = s.getLine(line);
-            replacement = replacement.replaceAll(spacingStr, " ");
+            replacement = replacement.replaceAll(config.spacingStr, " ");
 
             if (replaceAll) {
                 lineText = lineText.replaceAll(regex, replacement);

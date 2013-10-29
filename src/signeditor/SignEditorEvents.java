@@ -18,7 +18,7 @@ public class SignEditorEvents implements Listener {
 
     @EventHandler()
     public void onLogin(PlayerLoginEvent e) {
-        boolean enableEditing = e.getPlayer().hasPermission(SignEditor.PERM_EDIT) ? SignEditor.enableEditing : false;
+        boolean enableEditing = e.getPlayer().hasPermission(SignEditor.PERM_EDIT) ? SignEditor.config.enableEditing : false;
 
         e.getPlayer().setMetadata(SignEditor.SIGN_EDIT, new FixedMetadataValue(SignEditor.plugin, enableEditing));
         e.getPlayer().setMetadata(SignEditor.SIGN_LINES, new FixedMetadataValue(SignEditor.plugin, new String[4]));
@@ -29,7 +29,7 @@ public class SignEditorEvents implements Listener {
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
             Player p = e.getPlayer();
 
-            if (SignEditor.noSelector || p.getItemInHand().getData().getItemType() == Material.getMaterial(SignEditor.selectorItem)) {
+            if (SignEditor.noSelector || p.getItemInHand().getData().getItemType() == Material.getMaterial(SignEditor.config.selectorItem)) {
                 Block clickedBlock = e.getClickedBlock();
                 BlockState clickedBlockState = clickedBlock.getState();
 
