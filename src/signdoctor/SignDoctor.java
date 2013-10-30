@@ -281,7 +281,6 @@ public class SignDoctor extends JavaPlugin {
         StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < args.length; ++i) {
-            Bukkit.getServer().getLogger().info(args[i]);
             sb.append(args[i]);
 
             //Add a space if it is not the last element.
