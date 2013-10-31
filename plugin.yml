@@ -39,6 +39,18 @@ commands:
   pasteSign:
     description: Pastes the stored sign text to the active sign.
     usage: /<command>
+  clearln:
+    description: Clears the active sign's line.
+    usage: /<command> [Line1-4]
+  copyln:
+    description: Copies the active sign's line.
+    usage: /<command> [Line1-4]
+  cutln:
+    description: Cuts the active sign's line.
+    usage: /<command> [Line1-4]
+  pasteln:
+    description: Pastes the stored sign line to the active sign line.
+    usage: /<command> [Line1-4]
   tpToSign:
     description: Teleports you to the active sign.
     usage: /<command>

@@ -22,6 +22,7 @@ public class SignDoctorEvents implements Listener {
 
         e.getPlayer().setMetadata(SignDoctor.SIGN_EDIT, new FixedMetadataValue(SignDoctor.plugin, enableEditing));
         e.getPlayer().setMetadata(SignDoctor.SIGN_LINES, new FixedMetadataValue(SignDoctor.plugin, new String[4]));
+        e.getPlayer().setMetadata(SignDoctor.SIGN_LINE, new FixedMetadataValue(SignDoctor.plugin, ""));
     }
 
     @EventHandler()

@@ -25,6 +25,7 @@ public class SignDoctor extends JavaPlugin {
     public static final String SIGN = "SignDoctor_activeSign";
     public static final String SIGN_LINES = "SignDoctor_signLinesArray";
     public static final String PREV_LOCATION = "SignDoctor_previousLocation";
+    public static final String SIGN_LINE = "SignDoctor_signLine";
 
     //Messages
     public static final String MSG_EDIT_DISABLED = "Sign editing is not enabled. To enable, use the command: toggleSignEdit";
@@ -203,6 +204,40 @@ public class SignDoctor extends JavaPlugin {
                             updateSign(p, sign);
                             return true;
                         }
+
+                        if (args.length < 1)
+                            return false;
+
+                        int line = Integer.parseInt(args[0]) - 1;
+
+                        //Clear line command.
+                        if (cmd.getName().equalsIgnoreCase("clearln")) {
+                            clearLine(sign, line);
+                            updateSign(p, sign);
+                            return true;
+                        }
+
+                        //Copy line command.
+                        if (cmd.getName().equalsIgnoreCase("copyln")) {
+                            copyLine(p, sign, line);
+                            say(p, "Line " + (line + 1) + " has been copied.");
+                            return true;
+                        }
+
+                        //Cut line command.
+                        if (cmd.getName().equalsIgnoreCase("cutln")) {
+                            copyLine(p, sign, line);
+                            clearLine(sign, line);
+                            updateSign(p, sign);
+                            return true;
+                        }
+
+                        //Paste line command.
+                        if (cmd.getName().equalsIgnoreCase("pasteln")) {
+                            pasteLine(sign, (String) getMetadata(p, SIGN_LINE, plugin), line);
+                            updateSign(p, sign);
+                            return true;
+                        }
                     } catch (NumberFormatException e) {
                         return false;
                     } catch (InvalidLineException e) {
@@ -258,6 +293,38 @@ public class SignDoctor extends JavaPlugin {
     public static void pasteSign(Sign s, String lines[]) {
         for (int i = 0; i < lines.length; i++) {
             s.setLine(i, lines[i]);
+        }
+    }
+
+    /**
+     * Copies a sign's line and stores it in the player's clipboard. (The player has a separate clipboard for lines.)
+     * 
+     * @param p
+     * @param s
+     * @param line
+     * @throws InvalidLineException
+     */
+    public static void copyLine(Player p, Sign s, int line) throws InvalidLineException {
+        if (isValidLine(line)) {
+            p.setMetadata(SIGN_LINE, new FixedMetadataValue(plugin, s.getLine(line)));
+        } else {
+            throw new InvalidLineException();
+        }
+    }
+
+    public static void clearLine(Sign s, int line) throws InvalidLineException {
+        if (isValidLine(line)) {
+            s.setLine(line, "");
+        } else {
+            throw new InvalidLineException();
+        }
+    }
+
+    public static void pasteLine(Sign s, String text, int line) throws InvalidLineException {
+        if (isValidLine(line)) {
+            s.setLine(line, text);
+        } else {
+            throw new InvalidLineException();
         }
     }
 
