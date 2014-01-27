@@ -161,6 +161,28 @@ public class SignDoctor extends JavaPlugin {
                             return true;
                         }
 
+                        //replaceSign command
+                        replaceAll = cmd.getName().equalsIgnoreCase("replaceSignAll");
+                        if (cmd.getName().equalsIgnoreCase("replaceSign") || replaceAll) {
+                            String replacement = "";
+                            if (args.length < 1)
+                                return false;
+                            else if (args.length >= 2)
+                                replacement = args[1];
+
+                            try {
+                                for (int line = 0; line < 4; ++line) {
+                                    replaceln(sign, line, args[0], replacement, replaceAll);
+                                }
+                            } catch (PatternSyntaxException e) {
+                                say(p, "Regex syntax is incorrect.");
+                                return true;
+                            }
+
+                            updateSign(p, sign);
+                            return true;
+                        }
+
                         //switchln command
                         if (cmd.getName().equalsIgnoreCase("switchln")) {
                             if (args.length < 2) {

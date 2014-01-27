@@ -15,6 +15,12 @@ commands:
   prependToSign:
     description: Prepend text to the currently selected sign's line. You can use normal spaces. Lines range from 1 to 4.
     usage: /<command> [Line1-4] [Text...]
+  replaceSign:
+    description: Replaces the first text occurrence which matches the regular expression on all lines.
+    usage: /<command> [Regex] [Option Text]
+  replaceSignAll:
+    description: Replaces all text occurrences which matches the regular expression on all lines.
+    usage: /<command> [Regex] [Option Text]
   replaceln:
     description: Replaces the first text occurrence which matches the regular expression.
     usage: /<command> [Line1-4] [Regex] [Optional Text]
