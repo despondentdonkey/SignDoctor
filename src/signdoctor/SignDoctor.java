@@ -1,5 +1,6 @@
 package signdoctor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.PatternSyntaxException;
 import org.bukkit.Bukkit;
@@ -21,7 +22,9 @@ public class SignDoctor extends JavaPlugin {
 
     //Metadata keys
     public static final String SIGN_EDIT = "SignDoctor_editSign";
+    public static final String SIGN_MULTI_EDIT = "SignDoctor_editMultiSign";
     public static final String SIGN = "SignDoctor_activeSign";
+    public static final String SIGNS = "SignDoctor_activeSigns";
     public static final String SIGN_LINES = "SignDoctor_signLinesArray";
     public static final String PREV_LOCATION = "SignDoctor_previousLocation";
     public static final String SIGN_LINE = "SignDoctor_signLine";
@@ -56,14 +59,14 @@ public class SignDoctor extends JavaPlugin {
         getCommand("replaceln").setExecutor(new CommandReplaceLine(false));
         getCommand("replacelnAll").setExecutor(new CommandReplaceLine(true));
         getCommand("switchln").setExecutor(new CommandSwitchLine());
-        getCommand("clearSign").setExecutor(new CommandClearCopyCutPasteSign(CommandClearCopyCutPasteSign.Task.CLEAR));
-        getCommand("copySign").setExecutor(new CommandClearCopyCutPasteSign(CommandClearCopyCutPasteSign.Task.COPY));
-        getCommand("cutSign").setExecutor(new CommandClearCopyCutPasteSign(CommandClearCopyCutPasteSign.Task.CUT));
-        getCommand("pasteSign").setExecutor(new CommandClearCopyCutPasteSign(CommandClearCopyCutPasteSign.Task.PASTE));
-        getCommand("clearln").setExecutor(new CommandClearCopyCutPasteLine(CommandClearCopyCutPasteLine.Task.CLEAR));
-        getCommand("copyln").setExecutor(new CommandClearCopyCutPasteLine(CommandClearCopyCutPasteLine.Task.COPY));
-        getCommand("cutln").setExecutor(new CommandClearCopyCutPasteLine(CommandClearCopyCutPasteLine.Task.CUT));
-        getCommand("pasteln").setExecutor(new CommandClearCopyCutPasteLine(CommandClearCopyCutPasteLine.Task.PASTE));
+        getCommand("clearSign").setExecutor(new CommandClearPaste(false, true));
+        getCommand("pasteSign").setExecutor(new CommandClearPaste(true, true));
+        getCommand("clearln").setExecutor(new CommandClearPaste(false, false));
+        getCommand("pasteln").setExecutor(new CommandClearPaste(true, false));
+        getCommand("copySign").setExecutor(new CommandCopyCut(false, true));
+        getCommand("cutSign").setExecutor(new CommandCopyCut(true, true));
+        getCommand("copyln").setExecutor(new CommandCopyCut(false, false));
+        getCommand("cutln").setExecutor(new CommandCopyCut(true, false));
     }
 
     @Override
@@ -74,7 +77,6 @@ public class SignDoctor extends JavaPlugin {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender instanceof Player) {
             Player p = (Player) sender;
-            boolean editing = (boolean) getMetadata(p, SIGN_EDIT, this);
             Sign sign = (Sign) getMetadata(p, SignDoctor.SIGN, this);
 
             if (!p.hasPermission(PERM_EDIT)) {
@@ -119,8 +121,26 @@ public class SignDoctor extends JavaPlugin {
 
             //Toggle sign edit command.
             if (cmd.getName().equalsIgnoreCase("toggleSignEdit")) {
+                boolean editing = isEditing(p);
                 setEditing(p, !editing);
                 say(p, !editing ? "Editing has been enabled." : "Editing has been disabled.");
+                return true;
+            }
+
+            if (cmd.getName().equalsIgnoreCase("toggleMultiSignEdit")) {
+                setMultiEditing(p, !isMultiEditing(p));
+                if (isMultiEditing(p)) {
+                    setEditing(p, true); // Enabling multi editing should enable normal sign editing as well.
+                    say(p, "Multiple editing has been enabled.");
+                } else {
+                    say(p, "Multiple editing has been disabled.");
+                }
+                return true;
+            }
+
+            if (cmd.getName().equalsIgnoreCase("deactivateSigns")) {
+                List<Sign> signs = new ArrayList<Sign>();
+                p.setMetadata(SIGNS, new FixedMetadataValue(plugin, signs));
                 return true;
             }
 
@@ -138,6 +158,19 @@ public class SignDoctor extends JavaPlugin {
 
     public static boolean isEditing(Player p) {
         return (boolean) getMetadata(p, SIGN_EDIT, plugin);
+    }
+
+    public static void setMultiEditing(Player p, boolean val) {
+        p.setMetadata(SIGN_MULTI_EDIT, new FixedMetadataValue(plugin, val));
+    }
+
+    public static boolean isMultiEditing(Player p) {
+        return (boolean) getMetadata(p, SIGN_MULTI_EDIT, plugin);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static List<Sign> getActiveSigns(Player p) {
+        return (List<Sign>) SignDoctor.getMetadata(p, SIGNS, plugin);
     }
 
     /**

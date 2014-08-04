@@ -33,6 +33,12 @@ commands:
   toggleSignEdit:
     description: Toggle the ability to edit signs.
     usage: /<command>
+  toggleMultiSignEdit:
+    description: Toggle the ability to edit multiple signs.
+    usage: /<command>
+  deactivateSigns:
+    description: Deactivates all signs activated by the multiple sign selector.
+    usage: /<command>
   clearSign:
     description: Clears the active sign's text.
     usage: /<command>

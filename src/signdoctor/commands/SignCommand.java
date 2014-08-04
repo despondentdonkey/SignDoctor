@@ -1,5 +1,6 @@
 package signdoctor.commands;
 
+import java.util.List;
 import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -12,6 +13,7 @@ import signdoctor.SignDoctor;
 public abstract class SignCommand implements CommandExecutor {
 
     protected Plugin plugin;
+    protected boolean supportsMulti = true;
 
     public SignCommand() {
         this.plugin = SignDoctor.plugin;
@@ -43,14 +45,39 @@ public abstract class SignCommand implements CommandExecutor {
         }
 
         Sign sign = (Sign) SignDoctor.getMetadata(player, SignDoctor.SIGN, plugin);
-
-        if (sign == null) {
+        if (!SignDoctor.isMultiEditing(player) && sign == null) {
             say(player, SignDoctor.MSG_NO_ACTIVE_SIGN);
             return true;
         }
 
+        List<Sign> signs = SignDoctor.getActiveSigns(player);
+        if (supportsMulti && SignDoctor.isMultiEditing(player)) {
+            boolean noSignSelected = false;
+            if (signs != null) {
+                if (signs.size() < 1) {
+                    noSignSelected = true;
+                }
+            } else {
+                noSignSelected = true;
+            }
+            if (noSignSelected) {
+                say(player, "No signs selected.");
+                return true;
+            }
+        }
+
         try {
-            return onCommand(player, command, label, args, sign);
+            if (supportsMulti && SignDoctor.isMultiEditing(player)) {
+                boolean result = true;
+                for (Sign s : signs) {
+                    if (onCommand(player, command, label, args, s) == false) {
+                        result = false;
+                    }
+                }
+                return result;
+            } else {
+                return onCommand(player, command, label, args, sign);
+            }
         } catch (InvalidLineException e) {
             say(player, e.getMessage());
             return true;

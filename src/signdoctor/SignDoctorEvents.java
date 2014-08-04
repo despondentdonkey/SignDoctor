@@ -1,5 +1,7 @@
 package signdoctor;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -24,7 +26,8 @@ public class SignDoctorEvents implements Listener {
     public void onLogin(PlayerLoginEvent e) {
         boolean enableEditing = e.getPlayer().hasPermission(SignDoctor.PERM_EDIT) ? SignDoctor.config.enableEditing : false;
 
-        e.getPlayer().setMetadata(SignDoctor.SIGN_EDIT, new FixedMetadataValue(SignDoctor.plugin, enableEditing));
+        SignDoctor.setEditing(e.getPlayer(), enableEditing);
+        SignDoctor.setMultiEditing(e.getPlayer(), false);
         e.getPlayer().setMetadata(SignDoctor.SIGN_LINES, new FixedMetadataValue(SignDoctor.plugin, new String[4]));
         e.getPlayer().setMetadata(SignDoctor.SIGN_LINE, new FixedMetadataValue(SignDoctor.plugin, ""));
     }
@@ -42,8 +45,27 @@ public class SignDoctorEvents implements Listener {
                     if (clickedBlockState instanceof Sign) {
                         Sign s = (Sign) clickedBlockState;
 
-                        p.setMetadata(SignDoctor.SIGN, new FixedMetadataValue(SignDoctor.plugin, s));
-                        SignDoctor.say(p, "Sign active.");
+                        if (SignDoctor.isMultiEditing(p)) {
+                            List<Sign> signs = SignDoctor.getActiveSigns(p);
+                            if (signs == null) {
+                                signs = new ArrayList<Sign>();
+                            }
+
+                            for (Sign storedSign : signs) {
+                                if (s.equals(storedSign)) {
+                                    signs.remove(s);
+                                    SignDoctor.say(p, "Sign removed. " + Integer.toString(signs.size()));
+                                    return;
+                                }
+                            }
+
+                            signs.add(s);
+                            p.setMetadata(SignDoctor.SIGNS, new FixedMetadataValue(SignDoctor.plugin, signs));
+                            SignDoctor.say(p, "Sign added. " + Integer.toString(signs.size()));
+                        } else {
+                            p.setMetadata(SignDoctor.SIGN, new FixedMetadataValue(SignDoctor.plugin, s));
+                            SignDoctor.say(p, "Sign active.");
+                        }
                     }
                 }
             }
