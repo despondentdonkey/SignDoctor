@@ -68,3 +68,6 @@ permissions:
   signdoctor.signediting:
     description: Allows the editing of signs.
     default: op
+  signdoctor.teleporting:
+    description: Allows the use of tpToSign and tpBackFromSign.
+    default: op

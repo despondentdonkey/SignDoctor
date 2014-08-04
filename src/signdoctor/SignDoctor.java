@@ -33,6 +33,7 @@ public class SignDoctor extends JavaPlugin {
     public static final String MSG_NO_ACTIVE_SIGN = "No sign is active.";
 
     public static final String PERM_EDIT = "signdoctor.signediting";
+    public static final String PERM_TELEPORT = "signdoctor.teleporting";
 
     public static Configuration config;
 
@@ -85,6 +86,11 @@ public class SignDoctor extends JavaPlugin {
 
             //tpToSign command
             if (cmd.getName().equalsIgnoreCase("tpToSign")) {
+                if (!p.hasPermission(PERM_TELEPORT)) {
+                    say(p, "You do not have permission to teleport.");
+                    return true;
+                }
+
                 if (sign != null) {
                     p.setMetadata(PREV_LOCATION, new FixedMetadataValue(this, p.getLocation()));
                     p.teleport(sign.getLocation());
@@ -97,6 +103,11 @@ public class SignDoctor extends JavaPlugin {
 
             //tpBackFromSign command
             if (cmd.getName().equalsIgnoreCase("tpBackFromSign")) {
+                if (!p.hasPermission(PERM_TELEPORT)) {
+                    say(p, "You do not have permission to teleport.");
+                    return true;
+                }
+
                 Location previousLocation = (Location) getMetadata(p, PREV_LOCATION, this);
 
                 if (previousLocation != null) {
