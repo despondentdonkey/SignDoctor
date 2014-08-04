@@ -10,9 +10,9 @@ import org.bukkit.metadata.*;
 
 /**
  * Event handler class.
- * 
+ *
  * @author Parker Miller
- * 
+ *
  */
 public class SignDoctorEvents implements Listener {
 

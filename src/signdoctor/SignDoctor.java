@@ -14,9 +14,9 @@ import signdoctor.commands.*;
 
 /**
  * Sign Editor Plugin Class.
- * 
+ *
  * @author Parker Miller
- * 
+ *
  */
 public class SignDoctor extends JavaPlugin {
     public static Plugin plugin;
@@ -133,7 +133,7 @@ public class SignDoctor extends JavaPlugin {
 
     /**
      * Copies a sign and stores it into the player's clipboard.
-     * 
+     *
      * @param p
      * @param s
      */
@@ -161,7 +161,7 @@ public class SignDoctor extends JavaPlugin {
 
     /**
      * Copies a sign's line and stores it in the player's clipboard. (The player has a separate clipboard for lines.)
-     * 
+     *
      * @param p
      * @param s
      * @param line
@@ -193,7 +193,7 @@ public class SignDoctor extends JavaPlugin {
 
     /**
      * Checks if a integer is a valid line number. (0-3)
-     * 
+     *
      * @param line The line number you want to check, starting from 0 ending at 3.
      * @return
      */
@@ -203,7 +203,7 @@ public class SignDoctor extends JavaPlugin {
 
     /**
      * Merges an array of strings into one string. It also formats it to use spacingStr and spaces after each element.
-     * 
+     *
      * @param args
      * @return The merged string
      */
@@ -223,7 +223,7 @@ public class SignDoctor extends JavaPlugin {
 
     /**
      * Updates a sign and calls a SignChangeEvent.
-     * 
+     *
      * @param p The player who updated the sign.
      * @param s The sign you want to update.
      */
