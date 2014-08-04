@@ -1,9 +1,9 @@
 package signdoctor.commands;
 
-import org.bukkit.block.*;
-import org.bukkit.command.*;
-import org.bukkit.entity.*;
-import signdoctor.*;
+import org.bukkit.block.Sign;
+import org.bukkit.command.Command;
+import org.bukkit.entity.Player;
+import signdoctor.SignDoctor;
 
 public class CommandEditSign extends SignCommand {
 

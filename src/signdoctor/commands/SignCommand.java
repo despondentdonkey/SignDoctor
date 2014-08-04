@@ -1,10 +1,13 @@
 package signdoctor.commands;
 
-import org.bukkit.block.*;
-import org.bukkit.command.*;
-import org.bukkit.entity.*;
-import org.bukkit.plugin.*;
-import signdoctor.*;
+import org.bukkit.block.Sign;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import signdoctor.InvalidLineException;
+import signdoctor.SignDoctor;
 
 public abstract class SignCommand implements CommandExecutor {
 

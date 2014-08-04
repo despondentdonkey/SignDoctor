@@ -1,18 +1,22 @@
 package signdoctor;
 
-import org.bukkit.*;
-import org.bukkit.block.*;
-import org.bukkit.entity.*;
-import org.bukkit.event.*;
-import org.bukkit.event.block.*;
-import org.bukkit.event.player.*;
-import org.bukkit.metadata.*;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Sign;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 
 /**
  * Event handler class.
- *
+ * 
  * @author Parker Miller
- *
+ * 
  */
 public class SignDoctorEvents implements Listener {
 

@@ -1,10 +1,11 @@
 package signdoctor;
 
-import java.io.*;
-import java.util.*;
-import org.bukkit.configuration.*;
-import org.bukkit.configuration.file.*;
-import org.bukkit.plugin.*;
+import java.io.IOException;
+import java.util.Set;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 
 public class Configuration {
     public boolean enableEditing = false;

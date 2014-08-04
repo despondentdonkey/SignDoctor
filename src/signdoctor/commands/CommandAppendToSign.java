@@ -1,10 +1,11 @@
 package signdoctor.commands;
 
-import java.util.*;
-import org.bukkit.block.*;
-import org.bukkit.command.*;
-import org.bukkit.entity.*;
-import signdoctor.*;
+import java.util.Arrays;
+import org.bukkit.block.Sign;
+import org.bukkit.command.Command;
+import org.bukkit.entity.Player;
+import signdoctor.InvalidLineException;
+import signdoctor.SignDoctor;
 
 public class CommandAppendToSign extends SignCommand {
 
