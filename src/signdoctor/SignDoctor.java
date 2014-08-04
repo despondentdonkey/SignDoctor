@@ -10,6 +10,7 @@ import org.bukkit.event.block.*;
 import org.bukkit.metadata.*;
 import org.bukkit.plugin.*;
 import org.bukkit.plugin.java.*;
+import signdoctor.commands.*;
 
 /**
  * Sign Editor Plugin Class.
@@ -46,6 +47,24 @@ public class SignDoctor extends JavaPlugin {
         noSelector = (config.selectorItem.isEmpty() || config.selectorItem.equalsIgnoreCase("NULL"));
 
         getServer().getPluginManager().registerEvents(new SignDoctorEvents(), this);
+
+        getCommand("editSign").setExecutor(new CommandEditSign());
+        getCommand("editSignln").setExecutor(new CommandEditSignLine());
+        getCommand("appendToSign").setExecutor(new CommandAppendToSign(false));
+        getCommand("prependToSign").setExecutor(new CommandAppendToSign(true));
+        getCommand("replaceSign").setExecutor(new CommandReplaceSign(false));
+        getCommand("replaceSignAll").setExecutor(new CommandReplaceSign(true));
+        getCommand("replaceln").setExecutor(new CommandReplaceLine(false));
+        getCommand("replacelnAll").setExecutor(new CommandReplaceLine(true));
+        getCommand("switchln").setExecutor(new CommandSwitchLine());
+        getCommand("clearSign").setExecutor(new CommandClearCopyCutPasteSign(CommandClearCopyCutPasteSign.Task.CLEAR));
+        getCommand("copySign").setExecutor(new CommandClearCopyCutPasteSign(CommandClearCopyCutPasteSign.Task.COPY));
+        getCommand("cutSign").setExecutor(new CommandClearCopyCutPasteSign(CommandClearCopyCutPasteSign.Task.CUT));
+        getCommand("pasteSign").setExecutor(new CommandClearCopyCutPasteSign(CommandClearCopyCutPasteSign.Task.PASTE));
+        getCommand("clearln").setExecutor(new CommandClearCopyCutPasteLine(CommandClearCopyCutPasteLine.Task.CLEAR));
+        getCommand("copyln").setExecutor(new CommandClearCopyCutPasteLine(CommandClearCopyCutPasteLine.Task.COPY));
+        getCommand("cutln").setExecutor(new CommandClearCopyCutPasteLine(CommandClearCopyCutPasteLine.Task.CUT));
+        getCommand("pasteln").setExecutor(new CommandClearCopyCutPasteLine(CommandClearCopyCutPasteLine.Task.PASTE));
     }
 
     @Override
@@ -96,184 +115,6 @@ public class SignDoctor extends JavaPlugin {
                 return true;
             }
 
-            if (editing) {
-                if (sign != null) {
-                    try {
-                        //Edit sign command.
-                        if (cmd.getName().equalsIgnoreCase("editSign")) {
-                            editSign(sign, args);
-                            updateSign(p, sign);
-                            return true;
-                        }
-
-                        //Edit sign line command.
-                        if (cmd.getName().equalsIgnoreCase("editSignln")) {
-                            if (args.length < 1)
-                                return false;
-
-                            int line = Integer.parseInt(args[0]) - 1;
-                            editSignln(sign, line, Arrays.copyOfRange(args, 1, args.length));
-                            updateSign(p, sign);
-                            return true;
-                        }
-
-                        //appendToSign command
-                        if (cmd.getName().equalsIgnoreCase("appendToSign")) {
-                            if (args.length < 2)
-                                return false;
-
-                            int line = Integer.parseInt(args[0]) - 1;
-                            appendToSign(sign, line, Arrays.copyOfRange(args, 1, args.length));
-                            updateSign(p, sign);
-                            return true;
-                        }
-
-                        //prependToSign command
-                        if (cmd.getName().equalsIgnoreCase("prependToSign")) {
-                            if (args.length < 2)
-                                return false;
-
-                            int line = Integer.parseInt(args[0]) - 1;
-                            prependToSign(sign, line, Arrays.copyOfRange(args, 1, args.length));
-                            updateSign(p, sign);
-                            return true;
-                        }
-
-                        //replaceln command
-                        boolean replaceAll = cmd.getName().equalsIgnoreCase("replacelnAll");
-                        if (cmd.getName().equalsIgnoreCase("replaceln") || replaceAll) {
-                            String replacement = "";
-                            int line = Integer.parseInt(args[0]) - 1;
-
-                            if (args.length < 2)
-                                return false;
-                            else if (args.length >= 3)
-                                replacement = args[2];
-
-                            try {
-                                replaceln(sign, line, args[1], replacement, replaceAll);
-                            } catch (PatternSyntaxException e) {
-                                say(p, "Regex syntax is incorrect.");
-                                return true;
-                            }
-
-                            updateSign(p, sign);
-                            return true;
-                        }
-
-                        //replaceSign command
-                        replaceAll = cmd.getName().equalsIgnoreCase("replaceSignAll");
-                        if (cmd.getName().equalsIgnoreCase("replaceSign") || replaceAll) {
-                            String replacement = "";
-                            if (args.length < 1)
-                                return false;
-                            else if (args.length >= 2)
-                                replacement = args[1];
-
-                            try {
-                                for (int line = 0; line < 4; ++line) {
-                                    replaceln(sign, line, args[0], replacement, replaceAll);
-                                }
-                            } catch (PatternSyntaxException e) {
-                                say(p, "Regex syntax is incorrect.");
-                                return true;
-                            }
-
-                            updateSign(p, sign);
-                            return true;
-                        }
-
-                        //switchln command
-                        if (cmd.getName().equalsIgnoreCase("switchln")) {
-                            if (args.length < 2) {
-                                return false;
-                            }
-
-                            int lineTargetNum = Integer.parseInt(args[0]) - 1;
-                            int lineDestNum = Integer.parseInt(args[1]) - 1;
-                            switchln(sign, lineTargetNum, lineDestNum);
-                            updateSign(p, sign);
-                            return true;
-                        }
-
-                        //Clear sign command.
-                        if (cmd.getName().equalsIgnoreCase("clearSign")) {
-                            clearSign(sign);
-                            updateSign(p, sign);
-                            return true;
-                        }
-
-                        //Copy sign command.
-                        if (cmd.getName().equalsIgnoreCase("copySign")) {
-                            copySign(p, sign);
-                            say(p, "Sign has been copied.");
-                            return true;
-                        }
-
-                        //Cut sign command.
-                        if (cmd.getName().equalsIgnoreCase("cutSign")) {
-                            copySign(p, sign);
-                            clearSign(sign);
-                            updateSign(p, sign);
-
-                            say(p, "Sign has been cut.");
-                            return true;
-                        }
-
-                        //Paste sign command.
-                        if (cmd.getName().equalsIgnoreCase("pasteSign")) {
-                            pasteSign(sign, (String[]) getMetadata(p, SIGN_LINES, this));
-                            updateSign(p, sign);
-                            return true;
-                        }
-
-                        if (args.length < 1)
-                            return false;
-
-                        int line = Integer.parseInt(args[0]) - 1;
-
-                        //Clear line command.
-                        if (cmd.getName().equalsIgnoreCase("clearln")) {
-                            clearLine(sign, line);
-                            updateSign(p, sign);
-                            return true;
-                        }
-
-                        //Copy line command.
-                        if (cmd.getName().equalsIgnoreCase("copyln")) {
-                            copyLine(p, sign, line);
-                            say(p, "Line " + (line + 1) + " has been copied.");
-                            return true;
-                        }
-
-                        //Cut line command.
-                        if (cmd.getName().equalsIgnoreCase("cutln")) {
-                            copyLine(p, sign, line);
-                            clearLine(sign, line);
-                            updateSign(p, sign);
-                            return true;
-                        }
-
-                        //Paste line command.
-                        if (cmd.getName().equalsIgnoreCase("pasteln")) {
-                            pasteLine(sign, (String) getMetadata(p, SIGN_LINE, plugin), line);
-                            updateSign(p, sign);
-                            return true;
-                        }
-                    } catch (NumberFormatException e) {
-                        return false;
-                    } catch (InvalidLineException e) {
-                        say(p, e.getMessage());
-                        return true;
-                    }
-                } else {
-                    say(p, MSG_NO_ACTIVE_SIGN);
-                    return true;
-                }
-            } else {
-                say(p, MSG_EDIT_DISABLED);
-                return true;
-            }
         } else {
             sender.sendMessage("Sign Doctor: You must be a player for this to work.");
             return true;
